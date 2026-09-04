@@ -42,7 +42,7 @@ const globals = {
 };
 
 describe('mergeSyncedGlobalSettings: readestCloud', () => {
-  test('adopts a broadcast Readest Cloud switch-off', () => {
+  test('adopts a broadcast Moyue Cloud switch-off', () => {
     const merged = mergeSyncedGlobalSettings(local, {
       ...globals,
       cloudSyncProviders: {

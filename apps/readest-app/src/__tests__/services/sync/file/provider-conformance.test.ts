@@ -19,13 +19,13 @@ const runProviderConformance = (
   describe(`${name} — FileSyncProvider conformance`, () => {
     test('readText resolves null on 404', async () => {
       mock.ok(404, null);
-      expect(await makeProvider().readText('/Readest/x.json')).toBeNull();
+      expect(await makeProvider().readText('/Moyue/x.json')).toBeNull();
     });
 
     test('readText maps 401 to FileSyncError AUTH_FAILED', async () => {
       mock.ok(401, '');
       const err = await makeProvider()
-        .readText('/Readest/x.json')
+        .readText('/Moyue/x.json')
         .catch((e) => e);
       expect(err).toBeInstanceOf(FileSyncError);
       expect(err).toMatchObject({ code: 'AUTH_FAILED', status: 401 });
@@ -33,30 +33,30 @@ const runProviderConformance = (
 
     test('readBinary resolves null on 404', async () => {
       mock.ok(404, null);
-      expect(await makeProvider().readBinary('/Readest/x.bin')).toBeNull();
+      expect(await makeProvider().readBinary('/Moyue/x.bin')).toBeNull();
     });
 
     test('head reads content-length, null on 404', async () => {
       mock.ok(200, null, { 'content-length': '512' });
-      expect(await makeProvider().head('/Readest/x')).toEqual({ size: 512, etag: undefined });
+      expect(await makeProvider().head('/Moyue/x')).toEqual({ size: 512, etag: undefined });
       mock.ok(404, null);
-      expect(await makeProvider().head('/Readest/x')).toBeNull();
+      expect(await makeProvider().head('/Moyue/x')).toBeNull();
     });
 
     test('writeText succeeds on 201 Created', async () => {
       mock.ok(201, '');
-      await expect(makeProvider().writeText('/Readest/x.json', '{}')).resolves.toBeUndefined();
+      await expect(makeProvider().writeText('/Moyue/x.json', '{}')).resolves.toBeUndefined();
     });
 
     test('deleteDir treats 404 as success', async () => {
       mock.ok(404, null);
-      await expect(makeProvider().deleteDir('/Readest/books/gone')).resolves.toBeUndefined();
+      await expect(makeProvider().deleteDir('/Moyue/books/gone')).resolves.toBeUndefined();
     });
 
     test('list maps 401 to FileSyncError AUTH_FAILED', async () => {
       mock.ok(401, '');
       const err = await makeProvider()
-        .list('/Readest/books')
+        .list('/Moyue/books')
         .catch((e) => e);
       expect(err).toBeInstanceOf(FileSyncError);
       expect(err).toMatchObject({ code: 'AUTH_FAILED', status: 401 });
@@ -65,7 +65,7 @@ const runProviderConformance = (
     test('list maps 404 to FileSyncError NOT_FOUND', async () => {
       mock.ok(404, '');
       const err = await makeProvider()
-        .list('/Readest/books')
+        .list('/Moyue/books')
         .catch((e) => e);
       expect(err).toBeInstanceOf(FileSyncError);
       expect(err).toMatchObject({ code: 'NOT_FOUND', status: 404 });

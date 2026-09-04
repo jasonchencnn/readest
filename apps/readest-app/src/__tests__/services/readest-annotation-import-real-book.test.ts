@@ -14,7 +14,7 @@ import {
 /**
  * End-to-end anchor matching against a real EPUB and a real exported file.
  *
- * `alice-annotations.json` is a trimmed slice of an actual Readest export
+ * `alice-annotations.json` is a trimmed slice of an actual Moyue export
  * (Alice's Adventures in Wonderland, the same edition as the sample EPUB
  * fixture). It is kept because synthetic DOM fixtures encoded the same wrong
  * assumptions as the implementation and so could not catch the bookmark bug
@@ -24,7 +24,7 @@ import {
  * a spread of plain highlights, and the two entries that legitimately fail to
  * verify.
  */
-describe('importing a real Readest export into the book it came from', () => {
+describe('importing a real Moyue export into the book it came from', () => {
   let bookDoc: BookDoc;
   let payload: ReadestAnnotationExport;
 

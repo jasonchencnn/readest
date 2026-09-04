@@ -92,7 +92,7 @@ export const runBookOrbitNotesPass = async (deps: NotesPassDeps): Promise<void> 
     return;
   }
 
-  // Notes created in Readest carry only a CFI until a sync path needs the
+  // Notes created in Moyue carry only a CFI until a sync path needs the
   // KOReader position; fill the cache before building keys. The enriched
   // notes are overlaid locally so this pass doesn't depend on the merge
   // having landed in the store yet.

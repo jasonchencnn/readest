@@ -36,7 +36,7 @@ const getAdditionalBasicFontLinks = () => `
     .join('&')}&display=swap" crossorigin="anonymous">
 `;
 
-// CJK bundles Readest serves itself. The default CDN only answers CORS for
+// CJK bundles Moyue serves itself. The default CDN only answers CORS for
 // readest.com origins, so a self-hosted deployment on a custom domain gets each
 // of these blocked unless it points FONT_BASE_URL at a host it controls (#5550).
 const hostedCJKFonts = [

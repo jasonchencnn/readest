@@ -241,11 +241,11 @@ export const useProgressSync = (bookKey: string) => {
       const xpointer = syncedConfig.xpointer;
       const bookData = getBookData(bookKey);
       const view = getView(bookKey);
-      // The Readest KOReader plugin pushes `progress` + `xpointer` and never a
+      // The Moyue KOReader plugin pushes `progress` + `xpointer` and never a
       // `location`, so its [page, total] is CREngine's own pagination. That
       // doubles as the anchor that corrects CREngine<->foliate DocFragment
       // drift and as the last-resort target when the XPointer won't convert.
-      // A config that carries a CFI came from Readest, whose [page, total] is
+      // A config that carries a CFI came from Moyue, whose [page, total] is
       // foliate's pagination and whose xpointer was derived from that same
       // CFI — re-anchoring on it would only move the target off (#5109).
       const remoteFraction = syncedConfig.location ? undefined : getConfigFraction(syncedConfig);

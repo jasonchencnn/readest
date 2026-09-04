@@ -150,14 +150,14 @@ describe('Dropdown menu viewport layout', () => {
   });
 
   it('keeps natural width for short CJK labels without wrapping', async () => {
-    renderMenu(['自动主题', '设置', '下载 Readest']);
+    renderMenu(['自动主题', '设置', '下载 Moyue']);
 
     await expectMenuWithinViewport();
     const menu = openMenu();
     // Collapsed-to-longest-character would be ~40px; natural width is wider.
     expect(menu.getBoundingClientRect().width).toBeGreaterThan(80);
 
-    for (const text of ['自动主题', '设置', '下载 Readest']) {
+    for (const text of ['自动主题', '设置', '下载 Moyue']) {
       const label = screen.getByText(text);
       expect(label.offsetHeight).toBeLessThanOrEqual(30);
       expect(label.closest('button')!.offsetHeight).toBe(32);

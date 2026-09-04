@@ -191,7 +191,7 @@ export const useKOSync = (bookKey: string, provider: KosyncProgressProvider = ko
         }
       }
       // Other KOSync-compatible servers (e.g. Kavita) report progress in
-      // formats Readest can't resolve positionally — approximate with the
+      // formats Moyue can't resolve positionally — approximate with the
       // reported percentage so "use remote" still moves the reader.
       if (!navigated) {
         const remoteFraction = getRemoteFraction(remote);
@@ -271,7 +271,7 @@ export const useKOSync = (bookKey: string, provider: KosyncProgressProvider = ko
       });
     } else {
       // KOReader's reported percentage comes from its own pagination, so it's
-      // not directly comparable to Readest's progress. Resolve the remote
+      // not directly comparable to Moyue's progress. Resolve the remote
       // position to a local fraction for an apples-to-apples comparison.
       //
       // Crucially, a KOReader XPointer that FAILS to resolve locally

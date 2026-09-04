@@ -78,7 +78,7 @@ describe('createFileSyncProvider', () => {
 
   // The provider is memoised per connection key so its path->id cache stays
   // warm across surfaces (reader hook, library auto-sync, Sync now): a cold
-  // provider re-resolves /Readest, books/ and library.json by name query on
+  // provider re-resolves /Moyue, books/ and library.json by name query on
   // every engine build, turning each book open/close/sync into a burst of
   // redundant remote requests.
   test('returns the same instance for an unchanged connection', async () => {

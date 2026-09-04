@@ -1,7 +1,7 @@
 /**
  * Login-wall recovery for the article-clip pipeline (#5262).
  *
- * The clip WebView runs in Readest's own cookie jar, so a page behind a
+ * The clip WebView runs in Moyue's own cookie jar, so a page behind a
  * sign-in serves only its free preview — the OS sandbox makes the external
  * browser's session unreachable. The fallback here re-runs the clip in
  * *interactive* mode: the native controller shows the page with a

@@ -32,7 +32,7 @@ describe('getRemoteFraction', () => {
   });
 
   it('falls back to the percentage for non-XPointer progress (e.g. Kavita)', () => {
-    // Kavita's KOReader-compatible endpoint reports progress Readest cannot
+    // Kavita's KOReader-compatible endpoint reports progress Moyue cannot
     // resolve positionally, but still sends a percentage.
     const remote = { progress: 'page-42', percentage: 0.5 };
     expect(isXPointerProgress(remote.progress)).toBe(false);

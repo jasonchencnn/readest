@@ -17,7 +17,7 @@ interface ReceiveRequestDialogProps {
 }
 
 /**
- * Incoming LocalSend transfer prompt. Lists only the book files Readest can
+ * Incoming LocalSend transfer prompt. Lists only the book files Moyue can
  * import; other offered files are declined via protocol partial-accept, with
  * a note so the user knows the sender sees the split.
  */

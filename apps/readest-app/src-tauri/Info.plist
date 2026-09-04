@@ -5,21 +5,21 @@
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>NSLocalNetworkUsageDescription</key>
-    <string>Readest uses the local network to discover nearby devices and transfer books with LocalSend.</string>
+    <string>Moyue uses the local network to discover nearby devices and transfer books with LocalSend.</string>
     <key>NSUbiquitousContainers</key>
     <dict>
-      <key>iCloud.com.bilingify.readest</key>
+      <key>iCloud.com.moyue.app</key>
       <dict>
         <key>NSUbiquitousContainerIsDocumentScopePublic</key>
         <true/>
         <key>NSUbiquitousContainerName</key>
-        <string>Readest</string>
+        <string>Moyue</string>
         <key>NSUbiquitousContainerSupportedFolderLevels</key>
         <string>Any</string>
       </dict>
     </dict>
     <key>NSFaceIDUsageDescription</key>
-    <string>Readest uses Face ID to unlock the app.</string>
+    <string>Moyue uses Face ID to unlock the app.</string>
     <key>LSSupportsOpeningDocumentsInPlace</key>
     <false/>
     <key>UIViewControllerBasedStatusBarAppearance</key>

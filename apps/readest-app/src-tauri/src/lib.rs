@@ -269,7 +269,10 @@ fn compute_updater_disabled(
 
 #[cfg(desktop)]
 fn updater_disabled() -> bool {
-    let env_disable = std::env::var("READEST_DISABLE_UPDATER").is_ok();
+    // ReadestCN build: no real updater endpoints are configured, so the
+    // in-app updater is permanently hidden (same effect as the
+    // READEST_DISABLE_UPDATER env opt-out).
+    let env_disable = true;
     #[cfg(target_os = "linux")]
     {
         let is_flatpak =
@@ -481,7 +484,7 @@ pub fn run() {
                 app.emit("single-instance", SingleInstancePayload { args: argv, cwd })
                     .unwrap();
             })
-            .dbus_id("com.bilingify.readest".to_owned())
+            .dbus_id("com.moyue.app".to_owned())
             .build(),
     );
 
@@ -686,7 +689,7 @@ pub fn run() {
             let win_builder = win_builder
                 .decorations(true)
                 .title_bar_style(TitleBarStyle::Overlay)
-                .title("Readest");
+                .title("墨阅");
 
             #[cfg(all(not(target_os = "macos"), desktop))]
             let win_builder = {
@@ -694,7 +697,7 @@ pub fn run() {
                     .decorations(false)
                     .visible(false)
                     .shadow(true)
-                    .title("Readest");
+                    .title("墨阅");
 
                 #[cfg(target_os = "windows")]
                 {

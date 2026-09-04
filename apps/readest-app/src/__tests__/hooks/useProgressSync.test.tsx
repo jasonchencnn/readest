@@ -460,7 +460,7 @@ describe('useProgressSync', () => {
 
   test('sync-book-progress flushes the pending cloud push on book close', async () => {
     // Reproduces issue #4532: the reader is closed inside the 3s auto-sync
-    // debounce window, so the pending Readest cloud push would otherwise be
+    // debounce window, so the pending Moyue cloud push would otherwise be
     // dropped on unmount and never reach the cloud.
     // Mount: the empty pull settles and opens the gate (configPulled = true).
     const { rerender } = renderHook(() => useProgressSync('h1-view1'));
@@ -492,7 +492,7 @@ describe('useProgressSync', () => {
   });
 });
 
-// Issue #5625. The Readest KOReader plugin pushes `progress` + `xpointer` and
+// Issue #5625. The Moyue KOReader plugin pushes `progress` + `xpointer` and
 // never a `location`, so the CREngine XPointer is the ONLY precise handle on
 // the remote position. When converting it throws — a chapter whose XHTML isn't
 // well-formed used to make `createDocument()` hand back a body-less
@@ -528,7 +528,7 @@ describe('useProgressSync — KOReader-origin config (#5625)', () => {
   });
 
   test('does not anchor on the percentage when the remote config carries its own CFI', async () => {
-    // A Readest-origin config: its xpointer was derived from that same CFI, so
+    // A Moyue-origin config: its xpointer was derived from that same CFI, so
     // the nominal DocFragment is already exact and its [page, total] is
     // foliate's pagination, not CREngine's — re-anchoring on it would move the
     // target to the wrong section.

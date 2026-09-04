@@ -33,7 +33,7 @@ const settings = {
     userkey: 'key',
     password: '',
     deviceId: 'device-1',
-    deviceName: 'Readest',
+    deviceName: 'Moyue',
     checksumMethod: 'binary',
     strategy: 'prompt',
   },

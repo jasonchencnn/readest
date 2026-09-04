@@ -8,7 +8,7 @@ describe('buildWebDAVConnectSettings', () => {
       serverUrl: '  https://dav.example.com  ',
       username: 'alice',
       password: 'hunter2',
-      rootPath: '/Readest',
+      rootPath: '/Moyue',
     });
     // The builder is activation-agnostic: `enabled` (and the activation
     // side effects like the syncBooks auto-flip) belong to
@@ -17,7 +17,7 @@ describe('buildWebDAVConnectSettings', () => {
       serverUrl: 'https://dav.example.com',
       username: 'alice',
       password: 'hunter2',
-      rootPath: '/Readest',
+      rootPath: '/Moyue',
     });
   });
 
@@ -30,7 +30,7 @@ describe('buildWebDAVConnectSettings', () => {
       serverUrl: 'https://dav.example.com',
       username: 'alice',
       password: 'hunter2',
-      rootPath: '/Readest',
+      rootPath: '/Moyue',
       syncProgress: true,
       syncNotes: true,
       syncBooks: true,
@@ -43,7 +43,7 @@ describe('buildWebDAVConnectSettings', () => {
       serverUrl: 'https://dav.example.com',
       username: 'alice',
       password: 'hunter2',
-      rootPath: '/Readest',
+      rootPath: '/Moyue',
     });
 
     // Still disabled: the connect flow activates via persistCloudProviderEnabled

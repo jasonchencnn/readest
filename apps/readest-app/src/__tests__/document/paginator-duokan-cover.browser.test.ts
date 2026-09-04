@@ -9,7 +9,7 @@ import type { Renderer } from '@/types/view';
 // the fixed-height page in paginated mode but collapses to zero against the
 // auto-height scroll container in scrolled mode (the cover disappears).
 const EPUB_URL = new URL('../fixtures/data/repro-4379.epub', import.meta.url).href;
-// repro-5263: same cover, but the wrapper div is positioned (as Readest's
+// repro-5263: same cover, but the wrapper div is positioned (as Moyue's
 // duokan-bleed handling makes it). The pinned image must not resolve its
 // height:100% against the zero-height wrapper, or the cover renders blank.
 const EPUB_5263_URL = new URL('../fixtures/data/repro-5263.epub', import.meta.url).href;

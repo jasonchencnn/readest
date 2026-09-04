@@ -6,10 +6,10 @@
  *
  *  - **`drive.file` scope.** The app sees *only* the files it created, so Drive
  *    behaves like a private app folder rooted at `'root'`. That makes Drive's
- *    real root a safe namespace for our `/Readest/...` layout — no clash with the
+ *    real root a safe namespace for our `/Moyue/...` layout — no clash with the
  *    user's own files is possible because we cannot even see them.
  *  - **Drive is ID-addressed, not path-addressed.** A logical path like
- *    `/Readest/books/<hash>/config.json` must be resolved segment-by-segment into
+ *    `/Moyue/books/<hash>/config.json` must be resolved segment-by-segment into
  *    Drive file ids via `files.list` search queries, then operated on by id.
  *    Resolved ids are memoised in {@link idCache} (scoped to this provider
  *    instance) so repeated access under one folder does not re-walk the tree.
@@ -23,13 +23,13 @@
  *  - `files.list` is drained across `nextPageToken` pages (no silent truncation);
  *  - concurrent folder creation is serialised per logical path and dup names are
  *    collapsed deterministically (the engine runs books at concurrency 4, which
- *    otherwise races to create `/Readest` several times on a fresh remote).
+ *    otherwise races to create `/Moyue` several times on a fresh remote).
  *
  * Tokens are supplied by an injected {@link DriveAuth}; `fetch` is injected as
  * {@link FetchFn}; `sleep` is injected so backoff is instant under test. All
  * three keep the provider unit-testable against a mocked Drive.
  *
- * Adapted from ratatabananana-bit/Readest-google-drive-mod-patcher (AGPL-3.0),
+ * Adapted from ratatabananana-bit/Moyue-google-drive-mod-patcher (AGPL-3.0),
  * used with the author's explicit permission.
  */
 
@@ -235,7 +235,7 @@ const splitSegments = (path: string): string[] => path.split('/').filter((s) => 
 const joinAbs = (parent: string, name: string): string =>
   parent === '/' || parent === '' ? `/${name}` : `${parent}/${name}`;
 
-/** Absolute prefix of the first `count` segments (e.g. `/Readest/books`). */
+/** Absolute prefix of the first `count` segments (e.g. `/Moyue/books`). */
 const prefixOf = (segments: string[], count: number): string =>
   `/${segments.slice(0, count).join('/')}`;
 
@@ -309,7 +309,7 @@ class DriveProviderImpl {
 
   /**
    * In-flight folder creations keyed by absolute prefix. The engine runs books
-   * at concurrency 4, so several workers can simultaneously find `/Readest`
+   * at concurrency 4, so several workers can simultaneously find `/Moyue`
    * missing and each create it. Serialising per prefix collapses that to one
    * create; {@link findChild} then picks a deterministic winner if a race still
    * produced duplicate folders.

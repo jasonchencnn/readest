@@ -9,7 +9,7 @@
 //
 // The swap is gated on the reading being kana, which is what keeps every other
 // use of ruby markup working as before: emphasis dots (傍点), pinyin, zhuyin,
-// latin/kanji glosses and Readest's own injected WordLens glosses all keep
+// latin/kanji glosses and Moyue's own injected WordLens glosses all keep
 // speaking the base and muting the annotation, exactly as they did before.
 
 // Kana letters proper — the marks that make a reading pronounceable. Notably

@@ -5,8 +5,8 @@ import type { KoAnnotation, KoDrawer } from './types';
 const pad = (n: number) => String(n).padStart(2, '0');
 
 /**
- * KOReader datetimes carry no timezone; Readest always uses the UTC frame (and
- * reports deviceTime in UTC too) so every Readest device derives identical
+ * KOReader datetimes carry no timezone; Moyue always uses the UTC frame (and
+ * reports deviceTime in UTC too) so every Moyue device derives identical
  * identity keys for the same note.
  */
 export const formatKoDatetime = (ms: number): string => {

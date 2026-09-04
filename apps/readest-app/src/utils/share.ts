@@ -17,7 +17,7 @@ const isValidToken = (raw: unknown): raw is string => typeof raw === 'string' &&
 export const buildShareUrl = (token: string): string => `${SHARE_BASE_URL}/${token}`;
 
 // Parses both the custom-scheme and HTTPS forms used by the deeplink ingress.
-//   readest://share/{token}
+//   moyue://share/{token}
 //   https://web.readest.com/s/{token}
 // Returns null on invalid input so callers can fall through to other parsers.
 export const parseShareDeepLink = (url: string): ShareDeepLink | null => {
@@ -28,8 +28,8 @@ export const parseShareDeepLink = (url: string): ShareDeepLink | null => {
   } catch {
     return null;
   }
-  if (parsed.protocol === 'readest:') {
-    // For readest://share/{token} the host portion holds the path segment
+  if (parsed.protocol === 'moyue:') {
+    // For moyue://share/{token} the host portion holds the path segment
     // before the slash. Use pathname for the token; url.host == 'share'.
     if (parsed.host !== 'share') return null;
     const token = parsed.pathname.replace(/^\/+/, '').replace(/\/+$/, '');
@@ -112,7 +112,7 @@ export const shareSelectedText = async (
 };
 
 const isWebReadestHost = (host: string): boolean => {
-  // Matches the production host and any preview domain Readest may serve from.
+  // Matches the production host and any preview domain Moyue may serve from.
   // Conservative: accepts only the exact production host or a *.readest.com
   // subdomain so a third-party site cannot impersonate a share URL.
   if (host === new URL(READEST_WEB_BASE_URL).host) return true;

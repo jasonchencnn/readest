@@ -42,7 +42,7 @@ function header(req: NextApiRequest, name: string): string | null {
 }
 
 function decodeRfc5987(value: string): string {
-  // `X-Readest-Title: UTF-8''Spa%C3%9F`. Used so non-ASCII titles survive
+  // `X-Moyue-Title: UTF-8''Spa%C3%9F`. Used so non-ASCII titles survive
   // the HTTP-header transport without arbitrary client encoding.
   const m = value.match(/^UTF-8''(.+)$/i);
   if (m) {
@@ -113,7 +113,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ error: countError.message });
   }
   if ((count ?? 0) >= SEND_INBOX_PENDING_LIMIT) {
-    return res.status(429).json({ error: 'Inbox is full — open Readest to process pending items' });
+    return res.status(429).json({ error: 'Inbox is full — open Moyue to process pending items' });
   }
 
   let body: Buffer;

@@ -46,7 +46,7 @@ afterEach(() => {
 
 describe('WebDAV request timeouts', () => {
   test('HEAD fails fast with a timeout after 5 s', async () => {
-    const p = headFile(config, '/Readest/library.json');
+    const p = headFile(config, '/Moyue/library.json');
     const assertion = expect(p).rejects.toThrow(/timed out/i);
     await vi.advanceTimersByTimeAsync(5_000);
     await assertion;
@@ -61,7 +61,7 @@ describe('WebDAV request timeouts', () => {
 
   test('GET keeps the long transfer ceiling (still pending at 5 s)', async () => {
     let settled = false;
-    const p = getFileBinary(config, '/Readest/books/h1/big.epub');
+    const p = getFileBinary(config, '/Moyue/books/h1/big.epub');
     p.catch(() => {
       settled = true;
     });

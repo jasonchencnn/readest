@@ -14,7 +14,7 @@ const json = (body: unknown, status = 200) =>
 describe('OneDriveProvider', () => {
   test('readText returns null on 404', async () => {
     const fetchFn = (async () => new Response('', { status: 404 })) as unknown as FetchFn;
-    expect(await make(fetchFn).readText('/Readest/x.json')).toBeNull();
+    expect(await make(fetchFn).readText('/Moyue/x.json')).toBeNull();
   });
 
   test('readText returns the body and sends a bearer token', async () => {
@@ -23,18 +23,18 @@ describe('OneDriveProvider', () => {
       auth = (init?.headers as Record<string, string>)?.['Authorization'] ?? '';
       return new Response('hello', { status: 200 });
     }) as unknown as FetchFn;
-    expect(await make(fetchFn).readText('/Readest/x.json')).toBe('hello');
+    expect(await make(fetchFn).readText('/Moyue/x.json')).toBe('hello');
     expect(auth).toBe('Bearer TOKEN');
   });
 
   test('head maps size + cTag to FileHead', async () => {
     const fetchFn = (async () => json({ size: 12, cTag: 'CTAG', file: {} })) as unknown as FetchFn;
-    expect(await make(fetchFn).head('/Readest/x.json')).toEqual({ size: 12, etag: 'CTAG' });
+    expect(await make(fetchFn).head('/Moyue/x.json')).toEqual({ size: 12, etag: 'CTAG' });
   });
 
   test('head returns null on 404', async () => {
     const fetchFn = (async () => new Response('', { status: 404 })) as unknown as FetchFn;
-    expect(await make(fetchFn).head('/Readest/x.json')).toBeNull();
+    expect(await make(fetchFn).head('/Moyue/x.json')).toBeNull();
   });
 
   test('list drains @odata.nextLink and maps folder vs file', async () => {
@@ -50,7 +50,7 @@ describe('OneDriveProvider', () => {
       .fn()
       .mockResolvedValueOnce(page1)
       .mockResolvedValueOnce(page2) as unknown as FetchFn;
-    const entries = await make(fetchFn).list('/Readest');
+    const entries = await make(fetchFn).list('/Moyue');
     expect(entries.map((e) => [e.name, e.isDirectory])).toEqual([
       ['books', true],
       ['library.json', false],
@@ -66,9 +66,9 @@ describe('OneDriveProvider', () => {
       method = init?.method ?? '';
       return json({ id: '1' }, 201);
     }) as unknown as FetchFn;
-    await make(fetchFn).writeText('/Readest/x.json', '{}');
+    await make(fetchFn).writeText('/Moyue/x.json', '{}');
     expect(method).toBe('PUT');
-    expect(url).toContain('/approot:/Readest/x.json:/content');
+    expect(url).toContain('/approot:/Moyue/x.json:/content');
   });
 
   test('ensureDir creates each folder and treats 409 nameAlreadyExists as success', async () => {
@@ -77,21 +77,21 @@ describe('OneDriveProvider', () => {
       calls.push(`${init?.method} ${u}`);
       return json({ error: { code: 'nameAlreadyExists' } }, 409);
     }) as unknown as FetchFn;
-    await expect(make(fetchFn).ensureDir(['/Readest', '/Readest/books'])).resolves.toBeUndefined();
+    await expect(make(fetchFn).ensureDir(['/Moyue', '/Moyue/books'])).resolves.toBeUndefined();
     expect(calls.length).toBe(2);
     expect(calls[0]).toContain('POST');
   });
 
   test('deleteDir tolerates a 404', async () => {
     const fetchFn = (async () => new Response('', { status: 404 })) as unknown as FetchFn;
-    await expect(make(fetchFn).deleteDir('/Readest/books/gone')).resolves.toBeUndefined();
+    await expect(make(fetchFn).deleteDir('/Moyue/books/gone')).resolves.toBeUndefined();
   });
 
   test('maps 401 to FileSyncError AUTH_FAILED', async () => {
     const fetchFn = (async () =>
       json({ error: { code: 'unauthenticated' } }, 401)) as unknown as FetchFn;
     const err = await make(fetchFn)
-      .list('/Readest')
+      .list('/Moyue')
       .catch((e: unknown) => e);
     expect(err).toBeInstanceOf(FileSyncError);
     expect((err as FileSyncError).code).toBe('AUTH_FAILED');
@@ -102,7 +102,7 @@ describe('OneDriveProvider', () => {
       .fn()
       .mockResolvedValueOnce(new Response('', { status: 429, headers: { 'Retry-After': '0' } }))
       .mockResolvedValueOnce(json({ value: [] })) as unknown as FetchFn;
-    expect(await make(fetchFn).list('/Readest')).toEqual([]);
+    expect(await make(fetchFn).list('/Moyue')).toEqual([]);
     expect((fetchFn as unknown as ReturnType<typeof vi.fn>).mock.calls.length).toBe(2);
   });
 });

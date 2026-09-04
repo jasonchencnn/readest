@@ -51,7 +51,7 @@ const makeOneDrive = (): Harness => {
   };
 };
 
-const BOOK = '/Readest/books/h/book.epub';
+const BOOK = '/Moyue/books/h/book.epub';
 
 describe('OneDriveProvider — streaming', () => {
   beforeEach(() => {
@@ -110,7 +110,7 @@ describe('OneDriveProvider — streaming', () => {
     expect(ok).toBe(true);
     expect(tauriDownload).toHaveBeenCalledTimes(1);
     const call = vi.mocked(tauriDownload).mock.calls[0]!;
-    expect(call[0]).toContain('/approot:/Readest/books/h/book.epub:/content');
+    expect(call[0]).toContain('/approot:/Moyue/books/h/book.epub:/content');
     expect(call[1]).toBe('/disk/dst.epub');
     expect(call[3]).toEqual({ Authorization: 'Bearer TOKEN' });
   });

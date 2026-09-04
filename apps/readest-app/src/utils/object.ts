@@ -10,8 +10,8 @@ import { getStorageType } from './storage';
  * `${userId}/` prefix and write into another tenant's namespace
  * (GHSA-mfmj-2frf-vhgw).
  *
- * Legitimate names DO contain `/` (e.g. `Readest/Books/<hash>.epub`,
- * `Readest/Replicas/<kind>/<id>/<file>`), so we reject traversal rather than
+ * Legitimate names DO contain `/` (e.g. `Moyue/Books/<hash>.epub`,
+ * `Moyue/Replicas/<kind>/<id>/<file>`), so we reject traversal rather than
  * separators: no `.`/`..`/empty path segments, no leading slash (absolute), no
  * backslash or NUL, checked on both the raw and percent-decoded forms.
  */

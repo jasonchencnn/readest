@@ -306,7 +306,7 @@ describe('useTouchEvent pinch vs two-finger scroll', () => {
     const h = renderTouchHook();
 
     h.current.onTouchStart(touchEvent([touch(200, 300)], 100));
-    // Readest's 15px native threshold has been crossed, but the paginator's
+    // Moyue's 15px native threshold has been crossed, but the paginator's
     // stricter browser-layered gate has not claimed the gesture yet.
     h.current.onTouchMove(touchEvent([touch(184, 300)], 116));
     expect(mocks.setHoveredBookKey).not.toHaveBeenCalled();

@@ -34,7 +34,7 @@ const FIXTURE = path.resolve(__dirname, '../fixtures/data/sample-alice.epub');
 
 const env = await detectAndroidEnv();
 if (!env) {
-  console.warn('[test:android] no adb device with Readest installed — skipping the Android lane');
+  console.warn('[test:android] no adb device with Moyue installed — skipping the Android lane');
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));

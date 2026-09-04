@@ -55,29 +55,29 @@ describe('GoogleDriveProvider — Drive transport', () => {
   test('readText resolves the path segment-by-segment then downloads, and caches ids', async () => {
     const h = makeDrive();
     h.fetchMock
-      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // findChild('Readest')
+      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // findChild('Moyue')
       .mockResolvedValueOnce(json({ files: [{ id: 'XID' }] })) // findChild('x.json')
       .mockResolvedValueOnce(text('HELLO')); // media download
-    expect(await h.provider.readText('/Readest/x.json')).toBe('HELLO');
+    expect(await h.provider.readText('/Moyue/x.json')).toBe('HELLO');
     expect(h.fetchMock).toHaveBeenCalledTimes(3);
     expect(h.url(2)).toContain('/XID?alt=media');
-    expect(new URL(h.url(0)).searchParams.get('q')).toContain("name = 'Readest'");
+    expect(new URL(h.url(0)).searchParams.get('q')).toContain("name = 'Moyue'");
 
     // A second read hits the cached file id — only the media GET fires.
     h.fetchMock.mockResolvedValueOnce(text('HELLO AGAIN'));
-    expect(await h.provider.readText('/Readest/x.json')).toBe('HELLO AGAIN');
+    expect(await h.provider.readText('/Moyue/x.json')).toBe('HELLO AGAIN');
     expect(h.fetchMock).toHaveBeenCalledTimes(4);
   });
 
   test('writeText uploads via a multipart create and auto-creates the parent folder', async () => {
     const h = makeDrive();
     h.fetchMock
-      .mockResolvedValueOnce(json({ files: [] })) // findChild('Readest') — missing
-      .mockResolvedValueOnce(json({ id: 'RID' })) // createFolder('Readest')
+      .mockResolvedValueOnce(json({ files: [] })) // findChild('Moyue') — missing
+      .mockResolvedValueOnce(json({ id: 'RID' })) // createFolder('Moyue')
       .mockResolvedValueOnce(json({ files: [folder('RID')] })) // re-query winner
       .mockResolvedValueOnce(json({ files: [] })) // findChild('new.json') — not exists
       .mockResolvedValueOnce(json({ id: 'NID' })); // multipart create
-    await h.provider.writeText('/Readest/new.json', '{"a":1}');
+    await h.provider.writeText('/Moyue/new.json', '{"a":1}');
     expect(h.fetchMock).toHaveBeenCalledTimes(5);
     expect(h.method(1)).toBe('POST'); // create folder
     expect(h.url(4)).toContain('uploadType=multipart');
@@ -87,7 +87,7 @@ describe('GoogleDriveProvider — Drive transport', () => {
   test('list drains every nextPageToken page', async () => {
     const h = makeDrive();
     h.fetchMock
-      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // findChild('Readest')
+      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // findChild('Moyue')
       .mockResolvedValueOnce(
         json({
           files: [
@@ -98,9 +98,9 @@ describe('GoogleDriveProvider — Drive transport', () => {
         }),
       )
       .mockResolvedValueOnce(json({ files: [{ id: 'C', name: 'c.json' }] }));
-    const entries = await h.provider.list('/Readest');
+    const entries = await h.provider.list('/Moyue');
     expect(entries.map((e) => e.name)).toEqual(['a.json', 'b.json', 'c.json']);
-    expect(entries[0]).toMatchObject({ path: '/Readest/a.json', isDirectory: false });
+    expect(entries[0]).toMatchObject({ path: '/Moyue/a.json', isDirectory: false });
     expect(h.url(2)).toContain('pageToken=T2');
   });
 
@@ -110,17 +110,17 @@ describe('GoogleDriveProvider — Drive transport', () => {
       .mockResolvedValueOnce(json({ files: [folder('RID')] }))
       .mockResolvedValueOnce(json({ files: [{ id: 'XID' }] }))
       .mockResolvedValueOnce(json({ id: 'XID', name: 'x.json', size: '1234', md5Checksum: 'abc' }));
-    expect(await h.provider.head('/Readest/x.json')).toEqual({ size: 1234, etag: 'abc' });
+    expect(await h.provider.head('/Moyue/x.json')).toEqual({ size: 1234, etag: 'abc' });
   });
 
   test('deleteDir resolves the folder id and DELETEs it', async () => {
     const h = makeDrive();
     h.fetchMock
-      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // Readest
+      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // Moyue
       .mockResolvedValueOnce(json({ files: [folder('BID')] })) // books
       .mockResolvedValueOnce(json({ files: [folder('GID')] })) // gone
       .mockResolvedValueOnce(new Response(null, { status: 204 })); // DELETE
-    await expect(h.provider.deleteDir('/Readest/books/gone')).resolves.toBeUndefined();
+    await expect(h.provider.deleteDir('/Moyue/books/gone')).resolves.toBeUndefined();
     expect(h.method(3)).toBe('DELETE');
     expect(h.url(3)).toContain('/GID');
   });
@@ -128,11 +128,11 @@ describe('GoogleDriveProvider — Drive transport', () => {
   test('retries a 429 with backoff and then succeeds', async () => {
     const h = makeDrive();
     h.fetchMock
-      .mockResolvedValueOnce(new Response('', { status: 429 })) // findChild('Readest') throttled
+      .mockResolvedValueOnce(new Response('', { status: 429 })) // findChild('Moyue') throttled
       .mockResolvedValueOnce(json({ files: [folder('RID')] })) // retry succeeds
       .mockResolvedValueOnce(json({ files: [{ id: 'XID' }] }))
       .mockResolvedValueOnce(text('OK'));
-    expect(await h.provider.readText('/Readest/x.json')).toBe('OK');
+    expect(await h.provider.readText('/Moyue/x.json')).toBe('OK');
     expect(h.sleep).toHaveBeenCalledTimes(1);
     expect(h.fetchMock).toHaveBeenCalledTimes(4);
   });
@@ -140,14 +140,14 @@ describe('GoogleDriveProvider — Drive transport', () => {
   test('retries a thrown transport error (mobile connection-reuse) and then succeeds', async () => {
     const h = makeDrive();
     h.fetchMock
-      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // findChild('Readest') ok
+      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // findChild('Moyue') ok
       // childrenQuery throws like the Tauri HTTP plugin does on Android when a
       // pooled connection goes bad: a plain Error (not a TypeError).
       .mockRejectedValueOnce(
         new Error('error sending request for url (https://www.googleapis.com/...)'),
       )
       .mockResolvedValueOnce(json({ files: [{ id: 'XID', name: 'x.json' }] })); // retry opens a fresh connection
-    const entries = await h.provider.list('/Readest');
+    const entries = await h.provider.list('/Moyue');
     expect(entries.map((e) => e.name)).toEqual(['x.json']);
     expect(h.sleep).toHaveBeenCalledTimes(1);
     expect(h.fetchMock).toHaveBeenCalledTimes(3);
@@ -161,7 +161,7 @@ describe('GoogleDriveProvider — Drive transport', () => {
     h.fetchMock.mockRejectedValue(
       new Error('error sending request for url (https://www.googleapis.com/...)'),
     );
-    const err = await h.provider.list('/Readest').catch((e: unknown) => e);
+    const err = await h.provider.list('/Moyue').catch((e: unknown) => e);
     expect(err).toBeInstanceOf(FileSyncError);
     expect((err as FileSyncError).code).toBe('NETWORK');
     // 1 initial attempt + MAX_BACKOFF_RETRIES (4) = 5 calls on the first segment.
@@ -173,7 +173,7 @@ describe('GoogleDriveProvider — Drive transport', () => {
     rate.fetchMock.mockResolvedValueOnce(
       json({ error: { errors: [{ reason: 'userRateLimitExceeded' }] } }, 403),
     );
-    const rateErr = await rate.provider.readText('/Readest/x.json').catch((e: unknown) => e);
+    const rateErr = await rate.provider.readText('/Moyue/x.json').catch((e: unknown) => e);
     expect(rateErr).toBeInstanceOf(FileSyncError);
     expect((rateErr as FileSyncError).code).toBe('NETWORK');
 
@@ -181,20 +181,20 @@ describe('GoogleDriveProvider — Drive transport', () => {
     perm.fetchMock.mockResolvedValueOnce(
       json({ error: { errors: [{ reason: 'insufficientPermissions' }] } }, 403),
     );
-    const permErr = await perm.provider.readText('/Readest/x.json').catch((e: unknown) => e);
+    const permErr = await perm.provider.readText('/Moyue/x.json').catch((e: unknown) => e);
     expect((permErr as FileSyncError).code).toBe('AUTH_FAILED');
   });
 
   test('findChild picks the lexicographically smallest id when duplicates exist', async () => {
     const h = makeDrive();
-    // Two folders both named "Readest" (a create race) — resolution must converge
+    // Two folders both named "Moyue" (a create race) — resolution must converge
     // on the same one for every caller, so the smaller id wins deterministically.
     h.fetchMock
       .mockResolvedValueOnce(json({ files: [folder('B'), folder('A')] }))
       .mockResolvedValueOnce(json({ files: [{ id: 'XID' }] }))
       .mockResolvedValueOnce(text('DATA'));
-    await h.provider.readText('/Readest/x.json');
-    // The child lookup under "Readest" must query parent 'A', not 'B'.
+    await h.provider.readText('/Moyue/x.json');
+    // The child lookup under "Moyue" must query parent 'A', not 'B'.
     expect(new URL(h.url(1)).searchParams.get('q')).toContain("'A' in parents");
   });
 
@@ -205,16 +205,16 @@ describe('GoogleDriveProvider — Drive transport', () => {
       .mockResolvedValueOnce(json({ files: [folder('RID')] }))
       .mockResolvedValueOnce(json({ files: [{ id: 'XID' }] }))
       .mockResolvedValueOnce(text('FIRST'));
-    expect(await h.provider.readText('/Readest/x.json')).toBe('FIRST');
+    expect(await h.provider.readText('/Moyue/x.json')).toBe('FIRST');
 
     // Second read: cached XID now 404s (deleted + recreated remotely). The
     // provider evicts, re-resolves the path fresh, and reads the new id.
     h.fetchMock
       .mockResolvedValueOnce(new Response(null, { status: 404 })) // media GET on stale XID
-      .mockResolvedValueOnce(json({ files: [folder('RID2')] })) // re-resolve Readest
+      .mockResolvedValueOnce(json({ files: [folder('RID2')] })) // re-resolve Moyue
       .mockResolvedValueOnce(json({ files: [{ id: 'XID2' }] })) // re-resolve x.json
       .mockResolvedValueOnce(text('SECOND')); // media GET on XID2
-    expect(await h.provider.readText('/Readest/x.json')).toBe('SECOND');
+    expect(await h.provider.readText('/Moyue/x.json')).toBe('SECOND');
   });
 
   // Writes to a known path must not pay a lookup: the engine's steady state
@@ -224,13 +224,13 @@ describe('GoogleDriveProvider — Drive transport', () => {
   test('writeText to a cached path PATCHes the known id without a lookup', async () => {
     const h = makeDrive();
     h.fetchMock
-      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // findChild('Readest')
+      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // findChild('Moyue')
       .mockResolvedValueOnce(json({ files: [{ id: 'XID' }] })) // findChild('x.json')
       .mockResolvedValueOnce(text('FIRST')); // media download
-    await h.provider.readText('/Readest/x.json');
+    await h.provider.readText('/Moyue/x.json');
 
     h.fetchMock.mockResolvedValueOnce(json({ id: 'XID' })); // PATCH media update
-    await h.provider.writeText('/Readest/x.json', 'BODY');
+    await h.provider.writeText('/Moyue/x.json', 'BODY');
     expect(h.fetchMock).toHaveBeenCalledTimes(4);
     expect(h.url(3)).toContain('/upload/drive/v3/files/XID');
     expect(h.method(3)).toBe('PATCH');
@@ -244,10 +244,10 @@ describe('GoogleDriveProvider — Drive transport', () => {
   test('creating a new file sends name+parent and bytes in one multipart request (#5147)', async () => {
     const h = makeDrive();
     h.fetchMock
-      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // findChild('Readest')
+      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // findChild('Moyue')
       .mockResolvedValueOnce(json({ files: [] })) // findChild('new.json') — not exists
       .mockResolvedValueOnce(json({ id: 'NID' })); // multipart create
-    await h.provider.writeText('/Readest/new.json', '{"a":1}');
+    await h.provider.writeText('/Moyue/new.json', '{"a":1}');
     expect(h.fetchMock).toHaveBeenCalledTimes(3);
     expect(h.url(2)).toContain('uploadType=multipart');
     expect(h.method(2)).toBe('POST');
@@ -259,17 +259,17 @@ describe('GoogleDriveProvider — Drive transport', () => {
 
     // The created id is cached: a follow-up read is a single media GET.
     h.fetchMock.mockResolvedValueOnce(text('AFTER'));
-    expect(await h.provider.readText('/Readest/new.json')).toBe('AFTER');
+    expect(await h.provider.readText('/Moyue/new.json')).toBe('AFTER');
     expect(h.url(3)).toContain('/NID?alt=media');
   });
 
   test('a failed create leaves nothing unnamed in the Drive root (#5147)', async () => {
     const h = makeDrive();
     h.fetchMock
-      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // findChild('Readest')
+      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // findChild('Moyue')
       .mockResolvedValueOnce(json({ files: [] })) // findChild('new.json') — not exists
       .mockResolvedValue(json({ error: { errors: [{ reason: 'userRateLimitExceeded' }] } }, 403));
-    await expect(h.provider.writeText('/Readest/new.json', 'X')).rejects.toMatchObject({
+    await expect(h.provider.writeText('/Moyue/new.json', 'X')).rejects.toMatchObject({
       code: 'NETWORK',
     });
     // Every upload attempt carried the name and target parent inline, so a
@@ -286,13 +286,13 @@ describe('GoogleDriveProvider — Drive transport', () => {
     const h = makeDrive();
     const big = new Uint8Array(5 * 1024 * 1024 + 1);
     h.fetchMock
-      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // findChild('Readest')
+      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // findChild('Moyue')
       .mockResolvedValueOnce(json({ files: [] })) // findChild('big.bin') — not exists
       .mockResolvedValueOnce(
         new Response(null, { status: 200, headers: { Location: 'https://upload.test/session' } }),
       ) // resumable initiation (metadata rides here)
       .mockResolvedValueOnce(json({ id: 'NID' })); // PUT bytes to the session URI
-    await h.provider.writeBinary('/Readest/big.bin', big.buffer);
+    await h.provider.writeBinary('/Moyue/big.bin', big.buffer);
     expect(h.url(2)).toContain('uploadType=resumable');
     const initBody = (h.fetchMock.mock.calls[2]![1] as RequestInit).body as string;
     expect(JSON.parse(initBody)).toEqual({ name: 'big.bin', parents: ['RID'] });
@@ -303,24 +303,24 @@ describe('GoogleDriveProvider — Drive transport', () => {
   test('a stale cached id on write evicts and falls back to the full resolve', async () => {
     const h = makeDrive();
     h.fetchMock
-      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // findChild('Readest')
+      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // findChild('Moyue')
       .mockResolvedValueOnce(json({ files: [{ id: 'XID' }] })) // findChild('x.json')
       .mockResolvedValueOnce(text('FIRST')); // media download
-    await h.provider.readText('/Readest/x.json');
+    await h.provider.readText('/Moyue/x.json');
 
     // Cached XID was deleted remotely: the fast-path PATCH 404s, the provider
     // evicts and re-resolves, finds no existing file, and multipart-creates.
     h.fetchMock
       .mockResolvedValueOnce(json({}, 404)) // PATCH on stale XID
-      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // re-resolve Readest
+      .mockResolvedValueOnce(json({ files: [folder('RID')] })) // re-resolve Moyue
       .mockResolvedValueOnce(json({ files: [] })) // findChild('x.json') — gone
       .mockResolvedValueOnce(json({ id: 'NID' })); // multipart create
-    await h.provider.writeText('/Readest/x.json', 'BODY');
+    await h.provider.writeText('/Moyue/x.json', 'BODY');
     expect(h.fetchMock).toHaveBeenCalledTimes(7);
 
     // The recreated file's id is cached: a follow-up read is one media GET.
     h.fetchMock.mockResolvedValueOnce(text('AFTER'));
-    expect(await h.provider.readText('/Readest/x.json')).toBe('AFTER');
+    expect(await h.provider.readText('/Moyue/x.json')).toBe('AFTER');
     expect(h.url(7)).toContain('/NID?alt=media');
   });
 });

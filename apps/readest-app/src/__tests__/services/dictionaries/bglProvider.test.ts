@@ -179,7 +179,7 @@ describe('importDictionaries — Babylon BGL', () => {
         atime: null,
         birthtime: null,
       }),
-      getPrefix: vi.fn().mockResolvedValue('Readest/Dictionaries'),
+      getPrefix: vi.fn().mockResolvedValue('Moyue/Dictionaries'),
     };
   }
 

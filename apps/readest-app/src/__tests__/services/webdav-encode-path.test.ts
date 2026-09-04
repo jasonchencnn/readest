@@ -3,8 +3,8 @@ import { buildRequestUrl } from '@/services/sync/providers/webdav/client';
 
 describe('buildRequestUrl (encodePath)', () => {
   test('escapes spaces and unicode in each segment', () => {
-    expect(buildRequestUrl('https://dav.example.com', '/Readest/My Books/小说.epub')).toBe(
-      'https://dav.example.com/Readest/My%20Books/%E5%B0%8F%E8%AF%B4.epub',
+    expect(buildRequestUrl('https://dav.example.com', '/Moyue/My Books/小说.epub')).toBe(
+      'https://dav.example.com/Moyue/My%20Books/%E5%B0%8F%E8%AF%B4.epub',
     );
   });
 
@@ -12,8 +12,8 @@ describe('buildRequestUrl (encodePath)', () => {
     // Caller pre-encoded the literal space; encodePath used to turn the
     // %20 into %2520, silently breaking the request URL for any path
     // that came in already escaped.
-    expect(buildRequestUrl('https://dav.example.com', '/Readest/My%20Books/file.epub')).toBe(
-      'https://dav.example.com/Readest/My%20Books/file.epub',
+    expect(buildRequestUrl('https://dav.example.com', '/Moyue/My%20Books/file.epub')).toBe(
+      'https://dav.example.com/Moyue/My%20Books/file.epub',
     );
   });
 

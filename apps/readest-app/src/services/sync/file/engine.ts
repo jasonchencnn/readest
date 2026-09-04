@@ -132,7 +132,7 @@ const formatFailureReason = (e: unknown): string => {
 };
 
 /**
- * Delete the per-book directory `<rootPath>/Readest/books/<hash>/` — file,
+ * Delete the per-book directory `<rootPath>/Moyue/books/<hash>/` — file,
  * cover and config.json — in one round-trip. Used by the remote-browser
  * cleanup mode to evict orphans. AUTH failures rethrow (a global condition
  * the caller surfaces as a single re-auth toast); every other failure is
@@ -226,7 +226,7 @@ export class FileSyncEngine {
   /**
    * Directories already created (or confirmed to exist) during this engine
    * instance's sync session. The engine passes the FULL ancestor chain
-   * (`/Readest`, `/Readest/books`, `/Readest/books/<hash>`) to `ensureDir` for
+   * (`/Moyue`, `/Moyue/books`, `/Moyue/books/<hash>`) to `ensureDir` for
    * every book, so without this cache the shared parents get re-created on each
    * book — a redundant round-trip, and a 409 "name already exists" flood on
    * providers that create folders explicitly (OneDrive) or re-MKCOL (WebDAV).
@@ -268,7 +268,7 @@ export class FileSyncEngine {
   }
 
   /**
-   * Pull `<rootPath>/Readest/books/<hash>/config.json`, merge into the
+   * Pull `<rootPath>/Moyue/books/<hash>/config.json`, merge into the
    * provided local config, and return the merged result. The caller writes
    * the merged config back (so the engine stays free of store-write side
    * effects here). `applied: false` when the remote file is absent/malformed.
@@ -311,7 +311,7 @@ export class FileSyncEngine {
   }
 
   /**
-   * Upload the book binary to `<rootPath>/Readest/books/<hash>/<title>.<ext>`.
+   * Upload the book binary to `<rootPath>/Moyue/books/<hash>/<title>.<ext>`.
    * HEAD-probe + size compare skips re-uploading an already-mirrored book.
    * Streaming (provider.uploadStream, Tauri only) is preferred — constant JS
    * heap regardless of book size; web falls back to buffered writeBinary.
@@ -384,7 +384,7 @@ export class FileSyncEngine {
   }
 
   /**
-   * Upload the book's cover image to `<rootPath>/Readest/books/<hash>/cover.png`.
+   * Upload the book's cover image to `<rootPath>/Moyue/books/<hash>/cover.png`.
    * Same HEAD-probe + size-compare idempotency as {@link pushBookFile}. Covers
    * are best-effort: a book without a local cover resolves to `no-source`.
    */
@@ -633,7 +633,7 @@ export class FileSyncEngine {
           knownNoSource.get(book.hash) !== (book.updatedAt ?? 0)));
 
     // A book whose FILE is on the remote is cloud-backed, exactly like a book in
-    // Readest Cloud storage — and `book.uploadedAt` is the only thing the rest of
+    // Moyue Cloud storage — and `book.uploadedAt` is the only thing the rest of
     // the app reads to know that. Leaving it null for a provider-synced book made
     // the whole library misread it as purely-local: it could never be re-downloaded
     // (`makeBookAvailable` gates on `uploadedAt`), the shelf offered Upload instead

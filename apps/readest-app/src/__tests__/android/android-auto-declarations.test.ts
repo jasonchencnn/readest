@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
 /**
- * Android Auto support (#3919): for Readest to appear in the Android Auto
+ * Android Auto support (#3919): for Moyue to appear in the Android Auto
  * launcher as a media app, the manifest opts in to car projection via the
  * `com.google.android.gms.car.application` meta-data pointing at an
  * automotive descriptor that declares the `media` capability. Android Auto

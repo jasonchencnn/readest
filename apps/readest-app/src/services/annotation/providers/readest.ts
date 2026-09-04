@@ -140,7 +140,7 @@ const parseEntry = (value: unknown): ReadestAnnotationEntry | null => {
 };
 
 /**
- * Validate and normalize a Readest annotations file. Returns null when the
+ * Validate and normalize a Moyue annotations file. Returns null when the
  * envelope isn't ours; individual malformed entries are dropped instead.
  */
 export const parseAnnotationExport = (json: string): ReadestAnnotationExport | null => {

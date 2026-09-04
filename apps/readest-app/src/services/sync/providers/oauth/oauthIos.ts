@@ -7,7 +7,7 @@
  * `com.googleusercontent.apps.<id>:/oauthredirect` — registered in
  * `Info-ios.plist` `CFBundleURLTypes` so the OS routes the redirect back.
  *
- * Consent opens in an `ASWebAuthenticationSession` via Readest's native bridge
+ * Consent opens in an `ASWebAuthenticationSession` via Moyue's native bridge
  * command `auth_with_safari` (the same one the Supabase login uses). That session
  * intercepts the redirect by its `callbackURLScheme` — so unlike the desktop
  * deep-link runner, no app-wide URL listener is needed: the native command opens
@@ -19,7 +19,7 @@
  * string-matching the client-id-derived scheme, and PKCE is the real client
  * authentication. This holds only while App Check (iOS attestation) is off.
  *
- * Adapted from ratatabananana-bit/Readest-google-drive-mod-patcher (AGPL-3.0),
+ * Adapted from ratatabananana-bit/Moyue-google-drive-mod-patcher (AGPL-3.0),
  * used with the author's explicit permission.
  */
 import { authWithSafari } from '@/app/auth/utils/nativeAuth';

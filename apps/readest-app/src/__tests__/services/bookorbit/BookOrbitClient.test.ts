@@ -16,7 +16,7 @@ const makeConfig = (overrides: Partial<BookOrbitSettings> = {}): BookOrbitSettin
   username: 'alice',
   userkey: 'a'.repeat(32),
   deviceId: 'device-1',
-  deviceName: 'Readest Test',
+  deviceName: 'Moyue Test',
   strategy: 'prompt',
   syncProgress: true,
   syncNotes: true,
@@ -61,7 +61,7 @@ describe('BookOrbitClient', () => {
     expect(headers['X-Auth-Key']).toBe('a'.repeat(32));
     const body = JSON.parse(init.body as string) as Record<string, unknown>;
     expect(body['deviceId']).toBe('device-1');
-    expect(body['deviceModel']).toBe('Readest Test');
+    expect(body['deviceModel']).toBe('Moyue Test');
     expect(String(body['pluginVersion'])).toMatch(/^readest-/);
     expect(String(body['pluginVersion']).length).toBeLessThanOrEqual(20);
     expect(String(body['deviceTime'])).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/);

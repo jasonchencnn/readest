@@ -5,14 +5,14 @@
  * supplied by the caller (see `tokenEndpoint` on {@link ExchangeCodeParams} /
  * {@link RefreshTokenParams}).
  *
- * Readest's official Google client is the iOS application type, which has NO
+ * Moyue's official Google client is the iOS application type, which has NO
  * client secret — neither request sends one. The authorization code is instead
  * bound to this client by replaying the PKCE `code_verifier` (see `pkce.ts`).
  *
  * The request/parse logic is pure given an injected `fetch`, which keeps it
  * testable without a network and platform-agnostic.
  *
- * Adapted from ratatabananana-bit/Readest-google-drive-mod-patcher (AGPL-3.0),
+ * Adapted from ratatabananana-bit/Moyue-google-drive-mod-patcher (AGPL-3.0),
  * used with the author's explicit permission.
  */
 
@@ -171,7 +171,7 @@ const requestTokens = async (
 /**
  * Exchange an authorization `code` (plus the PKCE `verifier`) for an access and
  * refresh token. PKCE binds the code to this client; no client secret is sent
- * (Readest's client is the iOS application type, which has none).
+ * (Moyue's client is the iOS application type, which has none).
  */
 export const exchangeCode = (
   { code, verifier, clientId, redirectUri, tokenEndpoint }: ExchangeCodeParams,

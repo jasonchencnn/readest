@@ -109,7 +109,7 @@ describe('sortWebDAVEntries', () => {
   });
 
   test('name sort follows the resolved display name when provided', () => {
-    // Under Readest/books the entry name is a content hash; the resolver
+    // Under Moyue/books the entry name is a content hash; the resolver
     // maps it to the human title so "sort by name" matches what's shown.
     const entries = [dir('hashZ'), dir('hashA')];
     const titles: Record<string, string> = { hashZ: 'Alpha', hashA: 'Zulu' };

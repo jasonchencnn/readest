@@ -19,7 +19,7 @@ import { resolve } from 'path';
  * `#[cfg(not(target_os = "android"))]` — disabled on Android — so the error
  * propagates, fs capability/scope build fails, app init aborts -> black screen.
  *
- * Readest only ever does I/O under the INTERNAL app cache (`$APPCACHE` ->
+ * Moyue only ever does I/O under the INTERNAL app cache (`$APPCACHE` ->
  * `getCacheDir`, always available). It must never pull in the external `$CACHE`
  * scope. The fix grants the raw command sets (`fs:read-all`/`fs:write-all`) plus
  * an `$APPCACHE` scope entry instead of the cache permission bundles.

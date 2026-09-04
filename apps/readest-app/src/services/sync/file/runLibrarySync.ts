@@ -139,7 +139,7 @@ export const runFileLibrarySyncPass = async (
   _: TranslationFunc,
 ): Promise<SyncLibraryResult | null> => {
   // Paused means paused (#4959): a downgraded account's still-enabled backends
-  // must not sync, and must not fall back to Readest Cloud either.
+  // must not sync, and must not fall back to Moyue Cloud either.
   const backends = getActiveFileSyncBackends(useSettingsStore.getState().settings);
   if (backends.length === 0) return null;
 
@@ -177,7 +177,7 @@ export const runFileLibrarySyncPass = async (
 
 /**
  * Explicit per-book Upload, mirrored to EVERY enabled backend — the Book Details
- * / bookshelf cloud buttons call this alongside (or instead of) the Readest
+ * / bookshelf cloud buttons call this alongside (or instead of) the Moyue
  * Cloud transfer queue. Pushes the binary (HEAD short-circuited; an
  * already-mirrored file counts as success) plus the cover, best-effort per
  * backend. Succeeds when at least one backend took the book. Toasts are the

@@ -8,27 +8,25 @@ import Providers from '@/components/Providers';
 import '../styles/globals.css';
 
 const url = 'https://web.readest.com/';
-const title = 'Readest — Where You Read, Digest and Get Insight';
+const title = '墨阅 — 阅读、消化、洞见';
 const description =
-  'Discover Readest, the ultimate online ebook reader for immersive and organized reading. ' +
-  'Enjoy seamless access to your digital library, powerful tools for highlighting, bookmarking, ' +
-  'and note-taking, and support for multiple book views. ' +
-  'Perfect for deep reading, analysis, and understanding. Explore now!';
+  '墨阅是一款沉浸式电子书阅读器，支持 EPUB、PDF 等多种格式，' +
+  '提供高亮、书签、笔记等强大工具，多设备同步你的数字图书馆。';
 const previewImage = 'https://cdn.readest.com/images/open_graph_preview_read_now.png';
 
 export const metadata: Metadata = {
   metadataBase: new URL(url),
   title: {
     default: title,
-    template: '%s | Readest',
+    template: '%s | 墨阅',
   },
   description,
   generator: 'Next.js',
   manifest: '/manifest.json',
-  keywords: ['epub', 'pdf', 'ebook', 'reader', 'readest', 'pwa'],
+  keywords: ['epub', 'pdf', 'ebook', 'reader', 'moyue', 'pwa'],
   authors: [
     {
-      name: 'readest',
+      name: 'moyue',
       url: 'https://github.com/readest/readest',
     },
   ],
@@ -38,7 +36,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: 'Readest',
+    title: '墨阅',
     statusBarStyle: 'default',
   },
   openGraph: {

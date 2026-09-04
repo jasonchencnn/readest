@@ -20,7 +20,7 @@ export interface AndroidEnv {
   serial: string;
 }
 
-// The lane soft-skips unless adb, a device, and an installed Readest app are
+// The lane soft-skips unless adb, a device, and an installed Moyue app are
 // all present, so it is safe to run `pnpm test:android` anywhere.
 export const detectAndroidEnv = async (): Promise<AndroidEnv | null> => {
   if (!(await hasAdb())) return null;

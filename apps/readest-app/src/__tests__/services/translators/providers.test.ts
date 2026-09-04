@@ -167,7 +167,7 @@ describe('yandexProvider', () => {
     expect(mockTauriFetch).not.toHaveBeenCalled();
   });
 
-  it('translates without a Readest token via the direct yandex API', async () => {
+  it('translates without a Moyue token via the direct yandex API', async () => {
     mockYandexFlow(() => ({ code: 200, lang: 'en-fr', text: ['Bonjour'] }));
 
     const { yandexProvider } = await import('@/services/translators/providers/yandex');
@@ -218,7 +218,7 @@ describe('yandexProvider', () => {
     expect(mockTauriFetch).not.toHaveBeenCalled();
   });
 
-  it('rejects web requests without a Readest token before fetching', async () => {
+  it('rejects web requests without a Moyue token before fetching', async () => {
     vi.mocked(isTauriAppPlatform).mockReturnValue(false);
 
     const { yandexProvider } = await import('@/services/translators/providers/yandex');

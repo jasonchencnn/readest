@@ -1,7 +1,7 @@
 /**
  * The reverse-DNS OAuth redirect shared by every platform's runner.
  *
- * Readest uses ONE iOS-type Google client (no secret, no SHA-1) on every
+ * Moyue uses ONE iOS-type Google client (no secret, no SHA-1) on every
  * platform, whose only Google-accepted redirect is the reverse-DNS "iOS URL
  * scheme" — {@link GOOGLE_OAUTH_REDIRECT_SCHEME_PREFIX} followed by the client
  * id's identifier part. Both the desktop deep-link runner and the Android
@@ -9,7 +9,7 @@
  * the auth request, the token exchange, and the registered intent-filter /
  * desktop scheme stay byte-for-byte in agreement.
  *
- * Adapted from ratatabananana-bit/Readest-google-drive-mod-patcher (AGPL-3.0),
+ * Adapted from ratatabananana-bit/Moyue-google-drive-mod-patcher (AGPL-3.0),
  * used with the author's explicit permission.
  */
 

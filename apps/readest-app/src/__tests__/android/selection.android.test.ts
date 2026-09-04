@@ -27,14 +27,14 @@ import {
 // The fixture is a plain English book; the harness discovers a hyphenated,
 // on-screen paragraph at runtime and derives all gesture targets from live
 // layout, so the suite is independent of fonts, screen sizes, and the
-// fixture's exact text. Runs against any adb device/emulator with Readest
+// fixture's exact text. Runs against any adb device/emulator with Moyue
 // installed; soft-skips otherwise.
 
 const FIXTURE = path.resolve(__dirname, '../fixtures/data/sample-alice.epub');
 
 const env = await detectAndroidEnv();
 if (!env) {
-  console.warn('[test:android] no adb device with Readest installed — skipping the Android lane');
+  console.warn('[test:android] no adb device with Moyue installed — skipping the Android lane');
 }
 
 describe.runIf(env)('Android text selection over CDP (#1553)', () => {

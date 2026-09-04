@@ -2,7 +2,7 @@ import { SUPPORTED_BOOK_EXTS } from '@/services/constants';
 import type { LocalSendFile } from './types';
 
 /**
- * Split an incoming LocalSend file list into book files Readest can import
+ * Split an incoming LocalSend file list into book files Moyue can import
  * and files to decline. The receive dialog accepts only `supported`;
  * partial accept is native to the protocol, so the sender sees the split.
  */

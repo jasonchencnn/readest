@@ -152,7 +152,7 @@ const locateLine = (page: CdpPage, index: number) =>
 
 const env = await detectAndroidEnv();
 if (!env) {
-  console.warn('[test:android] no adb device with Readest installed — skipping the Android lane');
+  console.warn('[test:android] no adb device with Moyue installed — skipping the Android lane');
 }
 
 describe.runIf(env)('Android selection under the header trigger band (#5429)', () => {

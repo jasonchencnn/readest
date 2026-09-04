@@ -8,7 +8,7 @@ import { KoSyncProgress } from '@/services/sync/KOSyncClient';
  * native position format, e.g. `/body/DocFragment[11]/body/div/p[3]/text().0`.
  *
  * Servers other than KOReader — notably Kavita's KOReader-compatible sync
- * endpoint — also emit `/body/DocFragment[...]` XPointers that Readest CAN
+ * endpoint — also emit `/body/DocFragment[...]` XPointers that Moyue CAN
  * resolve positionally, but their `percentage` is computed from their own
  * pagination, not CREngine's. See {@link isReportedByKOReader}: the drift
  * correction in xcfi (`resolveSpineSectionIndex`) must only trust that
@@ -63,13 +63,13 @@ export const getRemoteFraction = (remote: KoSyncProgress): number | undefined =>
  * conflict detection (see {@link decideRemoteConflict}):
  *
  * - `resolved`     — the XPointer maps to a local position; `fraction` is an
- *                    apples-to-apples value comparable to Readest's progress.
+ *                    apples-to-apples value comparable to Moyue's progress.
  * - `unresolved`   — the progress IS a KOReader XPointer but couldn't be
  *                    converted to a local position (conversion threw, or the
  *                    CFI resolves to no local progress). This is common on iOS
  *                    (WKWebView) and is often a symptom of the DocFragment↔spine
  *                    drift (Bug A). It is NOT the same as "no conflict".
- * - `not-xpointer` — the server reported progress in a format Readest can't
+ * - `not-xpointer` — the server reported progress in a format Moyue can't
  *                    resolve positionally (e.g. Kavita). The reported
  *                    percentage is the only comparable signal.
  */
@@ -82,8 +82,8 @@ export type RemoteFractionResolution =
  * Resolves a remote KOReader position to a 0–1 progress fraction expressed in
  * the LOCAL book's pagination terms, reporting WHY it couldn't when it fails.
  *
- * KOReader and Readest paginate differently, so the server-reported
- * `percentage` is not directly comparable to Readest's own progress. When the
+ * KOReader and Moyue paginate differently, so the server-reported
+ * `percentage` is not directly comparable to Moyue's own progress. When the
  * remote position is a CREngine XPointer we convert it to a local CFI and ask
  * the view for the equivalent fraction, giving an apples-to-apples value.
  *
@@ -153,7 +153,7 @@ export interface RemoteConflictDecision {
  *
  * The core fix for #5065: an `unresolved` KOReader XPointer must NEVER be
  * assimilated to "no conflict" by comparing KOReader's percentage (from its own
- * CREngine pagination) against Readest's. Those percentages are not comparable,
+ * CREngine pagination) against Moyue's. Those percentages are not comparable,
  * so a coincidental match previously suppressed the prompt entirely — the
  * remote position was never applied and auto-push then clobbered it with the
  * stale local position. Failure to resolve ≠ absence of conflict: we surface
@@ -168,13 +168,13 @@ export const decideRemoteConflict = (
 ): RemoteConflictDecision => {
   switch (resolution.status) {
     case 'resolved':
-      // Apples-to-apples: both sides are expressed in Readest's pagination.
+      // Apples-to-apples: both sides are expressed in Moyue's pagination.
       return {
         showConflictDetails: Math.abs(localPercentage - resolution.fraction) > threshold,
         comparePercentage: resolution.fraction,
       };
     case 'unresolved':
-      // Can't compare a KOReader XPointer's percentage to Readest's — treat as
+      // Can't compare a KOReader XPointer's percentage to Moyue's — treat as
       // a conflict so the position is never silently dropped or overwritten.
       return { showConflictDetails: true, comparePercentage: remotePercentage };
     case 'not-xpointer':

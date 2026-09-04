@@ -307,7 +307,7 @@ const BooksGrid: React.FC<BooksGridProps> = ({ bookKeys, onCloseBook, onGoToLibr
     document.title = bookData.book.title;
     // The OS window title is invisible but is what Alt+Tab and screen readers
     // announce, so name the book there too — otherwise every window is just
-    // "Readest" and blind users cannot tell them apart.
+    // "Moyue" and blind users cannot tell them apart.
     if (appService?.hasWindow) {
       tauriSetWindowTitle(bookData.book.title);
     }

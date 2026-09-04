@@ -1,5 +1,5 @@
 /**
- * UpdaterContent — the "What's New in Readest" changelog.
+ * UpdaterContent — the "What's New in Moyue" changelog.
  *
  * When the UI locale is non-English, the release notes are auto-translated in
  * place. These tests cover the "Show original" toggle that lets the reader flip

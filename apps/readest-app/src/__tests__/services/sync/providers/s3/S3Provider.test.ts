@@ -86,8 +86,8 @@ describe('S3Provider — transport', () => {
     const h = makeS3();
     h.fetchMock.mockResolvedValueOnce(text('HELLO'));
 
-    expect(await h.provider.readText('/Readest/library.json')).toBe('HELLO');
-    expect(h.url(0)).toBe('https://acc.r2.cloudflarestorage.com/readest/Readest/library.json');
+    expect(await h.provider.readText('/Moyue/library.json')).toBe('HELLO');
+    expect(h.url(0)).toBe('https://acc.r2.cloudflarestorage.com/readest/Moyue/library.json');
     expect(h.method(0)).toBe('GET');
     expect(h.headers(0)['authorization']).toContain('AWS4-HMAC-SHA256');
   });
@@ -96,8 +96,8 @@ describe('S3Provider — transport', () => {
     const h = makeS3();
     h.fetchMock.mockResolvedValueOnce(text('X'));
 
-    await h.provider.readText('/Readest/books/h1/白夜行.epub');
-    expect(h.url(0)).toContain(`/readest/Readest/books/h1/${encodeURIComponent('白夜行.epub')}`);
+    await h.provider.readText('/Moyue/books/h1/白夜行.epub');
+    expect(h.url(0)).toContain(`/readest/Moyue/books/h1/${encodeURIComponent('白夜行.epub')}`);
   });
 
   test('head returns size and the ETag stripped of quotes', async () => {
@@ -109,29 +109,29 @@ describe('S3Provider — transport', () => {
       }),
     );
 
-    expect(await h.provider.head('/Readest/library.json')).toEqual({ size: 123, etag: 'abc123' });
+    expect(await h.provider.head('/Moyue/library.json')).toEqual({ size: 123, etag: 'abc123' });
     expect(h.method(0)).toBe('HEAD');
   });
 
   test('list maps CommonPrefixes to dirs and Contents to files, draining pages', async () => {
     const h = makeS3();
     h.fetchMock
-      .mockResolvedValueOnce(xml(listPage({ prefixes: ['Readest/books/h1/'], next: 'tok-2' })))
+      .mockResolvedValueOnce(xml(listPage({ prefixes: ['Moyue/books/h1/'], next: 'tok-2' })))
       .mockResolvedValueOnce(
-        xml(listPage({ keys: [{ key: 'Readest/books/library.json', size: 42 }] })),
+        xml(listPage({ keys: [{ key: 'Moyue/books/library.json', size: 42 }] })),
       );
 
-    const entries = await h.provider.list('/Readest/books');
+    const entries = await h.provider.list('/Moyue/books');
 
     expect(h.url(0)).toContain('list-type=2');
-    expect(h.url(0)).toContain(`prefix=${encodeURIComponent('Readest/books/')}`);
+    expect(h.url(0)).toContain(`prefix=${encodeURIComponent('Moyue/books/')}`);
     expect(h.url(0)).toContain('delimiter=%2F');
     expect(h.url(1)).toContain(`continuation-token=${encodeURIComponent('tok-2')}`);
     expect(entries).toEqual([
-      { name: 'h1', path: '/Readest/books/h1', isDirectory: true },
+      { name: 'h1', path: '/Moyue/books/h1', isDirectory: true },
       {
         name: 'library.json',
-        path: '/Readest/books/library.json',
+        path: '/Moyue/books/library.json',
         isDirectory: false,
         size: 42,
         lastModified: '2026-01-01T00:00:00.000Z',
@@ -141,13 +141,13 @@ describe('S3Provider — transport', () => {
 
   test('writeText PUTs the body with its content type; ensureDir never fetches', async () => {
     const h = makeS3();
-    await h.provider.ensureDir(['/Readest', '/Readest/books']);
+    await h.provider.ensureDir(['/Moyue', '/Moyue/books']);
     expect(h.fetchMock).not.toHaveBeenCalled();
 
     h.fetchMock.mockResolvedValueOnce(new Response(null, { status: 200 }));
-    await h.provider.writeText('/Readest/library.json', '{"a":1}');
+    await h.provider.writeText('/Moyue/library.json', '{"a":1}');
     expect(h.method(0)).toBe('PUT');
-    expect(h.url(0)).toContain('/readest/Readest/library.json');
+    expect(h.url(0)).toContain('/readest/Moyue/library.json');
     expect(h.fetchMock.mock.calls[0]?.[1]?.body).toBeDefined();
   });
 
@@ -157,16 +157,16 @@ describe('S3Provider — transport', () => {
       .mockResolvedValueOnce(
         xml(
           listPage({
-            keys: [{ key: 'Readest/books/h1/config.json' }, { key: 'Readest/books/h1/B.epub' }],
+            keys: [{ key: 'Moyue/books/h1/config.json' }, { key: 'Moyue/books/h1/B.epub' }],
           }),
         ),
       )
       .mockResolvedValueOnce(new Response(null, { status: 204 }))
       .mockResolvedValueOnce(new Response(null, { status: 404 })); // concurrently gone — fine
 
-    await h.provider.deleteDir('/Readest/books/h1');
+    await h.provider.deleteDir('/Moyue/books/h1');
 
-    expect(h.url(0)).toContain(`prefix=${encodeURIComponent('Readest/books/h1/')}`);
+    expect(h.url(0)).toContain(`prefix=${encodeURIComponent('Moyue/books/h1/')}`);
     expect(h.url(0)).not.toContain('delimiter');
     expect(h.method(1)).toBe('DELETE');
     expect(h.method(2)).toBe('DELETE');
@@ -179,22 +179,22 @@ describe('S3Provider — transport', () => {
       .mockResolvedValueOnce(new Response(null, { status: 503 }))
       .mockResolvedValueOnce(text('OK'));
 
-    expect(await h.provider.readText('/Readest/library.json')).toBe('OK');
+    expect(await h.provider.readText('/Moyue/library.json')).toBe('OK');
     expect(h.sleep).toHaveBeenCalledTimes(1);
   });
 
   test('maps statuses to FileSyncError codes (403 auth, 404 write, 409 conflict)', async () => {
     const h = makeS3();
     h.fetchMock.mockResolvedValue(new Response(null, { status: 403 }));
-    let err = await h.provider.list('/Readest/books').catch((e: unknown) => e);
+    let err = await h.provider.list('/Moyue/books').catch((e: unknown) => e);
     expect((err as FileSyncError).code).toBe('AUTH_FAILED');
 
     h.fetchMock.mockReset().mockResolvedValue(new Response(null, { status: 404 }));
-    err = await h.provider.writeText('/Readest/library.json', 'x').catch((e: unknown) => e);
+    err = await h.provider.writeText('/Moyue/library.json', 'x').catch((e: unknown) => e);
     expect((err as FileSyncError).code).toBe('NOT_FOUND');
 
     h.fetchMock.mockReset().mockResolvedValue(new Response(null, { status: 409 }));
-    err = await h.provider.writeText('/Readest/library.json', 'x').catch((e: unknown) => e);
+    err = await h.provider.writeText('/Moyue/library.json', 'x').catch((e: unknown) => e);
     expect((err as FileSyncError).code).toBe('CONFLICT');
   });
 
@@ -202,7 +202,7 @@ describe('S3Provider — transport', () => {
     const h = makeS3();
     h.fetchMock.mockRejectedValue(new TypeError('Failed to fetch'));
 
-    const err = await h.provider.readText('/Readest/library.json').catch((e: unknown) => e);
+    const err = await h.provider.readText('/Moyue/library.json').catch((e: unknown) => e);
     expect(err).toBeInstanceOf(FileSyncError);
     expect((err as FileSyncError).code).toBe('NETWORK');
   });

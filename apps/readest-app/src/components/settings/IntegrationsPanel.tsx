@@ -149,7 +149,7 @@ const IntegrationsPanel: React.FC = () => {
   }, [envConfig]);
 
   // Android Back / Esc: when any integrations sub-page (KOSync, WebDAV,
-  // Readwise, Hardcover, OPDS, Send-to-Readest) is open, intercept and
+  // Readwise, Hardcover, OPDS, Send-to-Moyue) is open, intercept and
   // step back to the integrations list instead of letting <Dialog>'s
   // listener close the whole Settings dialog. The hook registers its
   // sync `native-key-down` listener *after* <Dialog>'s, and
@@ -256,7 +256,7 @@ const IntegrationsPanel: React.FC = () => {
               </li>
               <li>
                 {_(
-                  'App settings, reading statistics, and dictionaries still sync through your Readest account while signed in.',
+                  'App settings, reading statistics, and dictionaries still sync through your Moyue account while signed in.',
                 )}
               </li>
             </Tips>
@@ -286,7 +286,7 @@ const IntegrationsPanel: React.FC = () => {
               </li>
               <li>
                 {_(
-                  'App settings, reading statistics, and dictionaries still sync through your Readest account while signed in.',
+                  'App settings, reading statistics, and dictionaries still sync through your Moyue account while signed in.',
                 )}
               </li>
             </Tips>
@@ -318,7 +318,7 @@ const IntegrationsPanel: React.FC = () => {
             {
               <li>
                 {_(
-                  'App settings, reading statistics, and dictionaries still sync through your Readest account while signed in.',
+                  'App settings, reading statistics, and dictionaries still sync through your Moyue account while signed in.',
                 )}
               </li>
             }
@@ -360,7 +360,7 @@ const IntegrationsPanel: React.FC = () => {
               </li>
               <li>
                 {_(
-                  'App settings, reading statistics, and dictionaries still sync through your Readest account while signed in.',
+                  'App settings, reading statistics, and dictionaries still sync through your Moyue account while signed in.',
                 )}
               </li>
             </Tips>
@@ -390,7 +390,7 @@ const IntegrationsPanel: React.FC = () => {
               </li>
               <li>
                 {_(
-                  'App settings, reading statistics, and dictionaries still sync through your Readest account while signed in.',
+                  'App settings, reading statistics, and dictionaries still sync through your Moyue account while signed in.',
                 )}
               </li>
             </Tips>
@@ -403,8 +403,8 @@ const IntegrationsPanel: React.FC = () => {
       <div className='my-4 w-full'>
         <SubPageHeader
           parentLabel={_('Integrations')}
-          currentLabel={_('Readest Cloud')}
-          description={_('Sync your library, reading progress, and highlights with Readest Cloud.')}
+          currentLabel={_('Moyue Cloud')}
+          description={_('Sync your library, reading progress, and highlights with Moyue Cloud.')}
           onBack={() => setSubPage(null)}
         />
         <BoxedList>
@@ -463,7 +463,7 @@ const IntegrationsPanel: React.FC = () => {
   const hardcoverStatus = settings.hardcover?.enabled ? _('Connected') : _('Not connected');
 
   // Cloud sync providers are independently selectable (#5062): any subset of
-  // {Readest Cloud, WebDAV, Google Drive, S3, OneDrive, iCloud} can sync the
+  // {Moyue Cloud, WebDAV, Google Drive, S3, OneDrive, iCloud} can sync the
   // library at once. A "configured" third-party provider (WebDAV creds / a Drive
   // token) can be switched on inline; an unconfigured one must be opened to
   // connect.
@@ -472,7 +472,7 @@ const IntegrationsPanel: React.FC = () => {
   const cloudGate = resolveCloudSyncGate(settings, userProfilePlan ?? 'free');
   const enabledBackends = cloudGate.backends;
 
-  /** Book files have a home when Readest Cloud is on or some backend uploads them. */
+  /** Book files have a home when Moyue Cloud is on or some backend uploads them. */
   const booksBackedUpBy = (kind: FileSyncBackendKind): boolean =>
     readestEnabled ||
     enabledBackends.some(
@@ -553,7 +553,7 @@ const IntegrationsPanel: React.FC = () => {
       <div className='w-full px-4'>
         <h2 className='mb-1.5 text-lg font-semibold tracking-tight'>{_('Integrations')}</h2>
         <p className='text-base-content/70 text-sm leading-relaxed'>
-          {_('Connect Readest to external services for sync, highlights, and catalogs.')}
+          {_('Connect Moyue to external services for sync, highlights, and catalogs.')}
         </p>
       </div>
 
@@ -599,13 +599,13 @@ const IntegrationsPanel: React.FC = () => {
           >
             <CloudProviderRow
               icon={RiCloudFill}
-              title={_('Readest Cloud')}
+              title={_('Moyue Cloud')}
               status={readestStatus}
               checked={!!user && readestEnabled}
               canToggle={!!user}
               onToggle={(next) => toggleCloudProvider('readest', next)}
               onOpen={() => (user ? setSubPage('readest-cloud') : navigateToLogin(router))}
-              toggleLabel={_('Sync with Readest Cloud')}
+              toggleLabel={_('Sync with Moyue Cloud')}
             />
             {/* Third-party providers are premium: every row carries the tier
                 badge; on a free plan the checkbox is disabled and opening a
@@ -717,7 +717,7 @@ const IntegrationsPanel: React.FC = () => {
               </li>
               <li>
                 {_(
-                  'App settings, reading statistics, and dictionaries still sync through your Readest account while signed in.',
+                  'App settings, reading statistics, and dictionaries still sync through your Moyue account while signed in.',
                 )}
               </li>
             </Tips>
@@ -737,7 +737,7 @@ const IntegrationsPanel: React.FC = () => {
             />
             <IntegrationRow
               icon={RiSendPlaneLine}
-              title={_('Send to Readest')}
+              title={_('Send to Moyue')}
               status={_('Email books to your library')}
               onClick={() => setSubPage('send')}
             />

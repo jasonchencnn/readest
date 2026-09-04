@@ -1,8 +1,8 @@
 /**
- * Full-page redirect OAuth for the Readest **web** build (the implicit / token
+ * Full-page redirect OAuth for the Moyue **web** build (the implicit / token
  * response, `response_type=token`).
  *
- * Why redirect and not a popup or GIS: Readest web serves
+ * Why redirect and not a popup or GIS: Moyue web serves
  * `Cross-Origin-Opener-Policy: same-origin` (for Turso's SharedArrayBuffer), which
  * severs a popup's opener handle — so GIS / any popup OAuth reports `popup_closed`
  * instantly. A full-page redirect doesn't rely on `window.opener`, so it works
@@ -39,7 +39,7 @@ export const webDriveRedirectUri = (): string =>
 /**
  * Build the Google authorization URL for the implicit (token) flow. `state` is a
  * CSRF nonce validated on the callback; `include_granted_scopes` keeps any scopes
- * the user already granted to Readest.
+ * the user already granted to Moyue.
  */
 export const buildImplicitAuthUrl = ({
   clientId,

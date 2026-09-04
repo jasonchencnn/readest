@@ -57,7 +57,7 @@ export default function ReadingStatsTracker({ bookKey }: { bookKey: string }) {
 
   const syncEnabled = () => !!user && isSyncCategoryEnabled('stats');
 
-  // BookOrbit stats push needs no Readest account — only the integration.
+  // BookOrbit stats push needs no Moyue account — only the integration.
   const bookOrbitStatsPush = (db: StatisticsDb): Promise<unknown> | undefined => {
     const { settings } = useSettingsStore.getState();
     const bookorbit = settings.bookorbit;

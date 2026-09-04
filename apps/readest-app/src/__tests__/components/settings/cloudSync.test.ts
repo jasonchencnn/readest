@@ -79,14 +79,14 @@ describe('withCloudProviderEnabled', () => {
     expect(next.webdav.password).toBe('p');
   });
 
-  test('turning Readest Cloud off writes an explicit false and stamps disabledAt', () => {
+  test('turning Moyue Cloud off writes an explicit false and stamps disabledAt', () => {
     const next = withCloudProviderEnabled(both, 'readest', false);
     expect(next.readestCloud?.enabled).toBe(false);
     expect(next.readestCloud?.disabledAt).toBeTruthy();
     expect(next.webdav.enabled).toBe(true);
   });
 
-  test('turning Readest Cloud on writes an explicit true and clears disabledAt', () => {
+  test('turning Moyue Cloud on writes an explicit true and clears disabledAt', () => {
     const off = withCloudProviderEnabled(both, 'readest', false);
     const on = withCloudProviderEnabled(off, 'readest', true);
     expect(on.readestCloud?.enabled).toBe(true);
@@ -174,7 +174,7 @@ describe('persistCloudProviderEnabled', () => {
         serverUrl: 'https://dav.example.com',
         username: 'alice',
         password: 'hunter2',
-        rootPath: '/Readest',
+        rootPath: '/Moyue',
         syncBooks: false,
       },
     }));

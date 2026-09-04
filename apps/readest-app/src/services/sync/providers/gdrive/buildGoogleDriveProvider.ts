@@ -18,7 +18,7 @@ import { WebDriveAuth } from './WebDriveAuth';
 import { createDriveTokenPersistence } from './driveTokenStore';
 
 /**
- * The official Readest Google OAuth client id (iOS application type, no secret),
+ * The official Moyue Google OAuth client id (iOS application type, no secret),
  * baked into the build so Drive sync works for every user out of the box. The
  * only runtime client — there is no BYO, because the redirect scheme is derived
  * from this id and registered in the platform manifests at build time (the
@@ -34,7 +34,7 @@ export const getGoogleClientId = (): string | undefined =>
   process.env['NEXT_PUBLIC_GOOGLE_CLIENT_ID'] || OFFICIAL_GOOGLE_CLIENT_ID;
 
 /**
- * The official Readest **Web-type** Google OAuth client id used by the browser
+ * The official Moyue **Web-type** Google OAuth client id used by the browser
  * GIS flow (its authorized JavaScript origins are `web.readest.com` + the
  * localhost dev origin). Separate from the iOS-type
  * {@link OFFICIAL_GOOGLE_CLIENT_ID}, which can't drive a browser token client.

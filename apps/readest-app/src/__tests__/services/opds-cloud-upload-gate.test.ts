@@ -29,7 +29,7 @@ const setSettings = (settings: Partial<SystemSettings>) => {
 
 beforeEach(() => {
   vi.useFakeTimers();
-  // Readest Cloud is active by default (no third-party provider enabled).
+  // Moyue Cloud is active by default (no third-party provider enabled).
   setSettings({});
 });
 
@@ -63,7 +63,7 @@ describe('queueOPDSBookUploads', () => {
     expect(mockedQueueUpload).not.toHaveBeenCalled();
   });
 
-  test('does NOT queue when Readest Cloud is switched off', () => {
+  test('does NOT queue when Moyue Cloud is switched off', () => {
     setSettings({ readestCloud: { enabled: false } } as Partial<SystemSettings>);
     queueOPDSBookUploads(true, useSettingsStore.getState().settings, [makeBook('b1')]);
 

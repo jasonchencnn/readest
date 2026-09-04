@@ -2,7 +2,7 @@
  * Desktop wiring of the OAuth authorization-code + PKCE flow: the system browser
  * plus a reverse-DNS custom-scheme deep link.
  *
- * Readest uses ONE iOS-type Google client (no secret) on every platform, whose
+ * Moyue uses ONE iOS-type Google client (no secret) on every platform, whose
  * only Google-accepted redirect is the reverse-DNS scheme
  * `com.googleusercontent.apps.<id>:/oauthredirect`. On desktop we open consent in
  * the user's default browser; Google redirects to that scheme; the OS routes it
@@ -20,7 +20,7 @@
  * a freshly-spawned cold browser (the native `spawn_fresh_browser` command).
  * Whichever browser returns first wins.
  *
- * Adapted from ratatabananana-bit/Readest-google-drive-mod-patcher (AGPL-3.0),
+ * Adapted from ratatabananana-bit/Moyue-google-drive-mod-patcher (AGPL-3.0),
  * used with the author's explicit permission.
  */
 import { invoke } from '@tauri-apps/api/core';

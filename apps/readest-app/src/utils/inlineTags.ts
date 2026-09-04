@@ -13,7 +13,7 @@
  *
  * Anything injected into a book paragraph at runtime must use a tag from this
  * list (or be added to it). `<font>` is here both because older EPUBs use it
- * and because Readest's own translation wrapper is a <font>.
+ * and because Moyue's own translation wrapper is a <font>.
  */
 export const INLINE_FORMATTING_TAGS = [
   'a',

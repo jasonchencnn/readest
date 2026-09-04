@@ -52,15 +52,15 @@ const makeDrive = (): Harness => {
   };
 };
 
-// Resolve the three folder segments of /Readest/books/h to existing folders.
+// Resolve the three folder segments of /Moyue/books/h to existing folders.
 const stageFolders = (h: Harness) => {
   h.fetchMock
-    .mockResolvedValueOnce(json({ files: [folder('RID')] })) // Readest
+    .mockResolvedValueOnce(json({ files: [folder('RID')] })) // Moyue
     .mockResolvedValueOnce(json({ files: [folder('BID')] })) // books
     .mockResolvedValueOnce(json({ files: [folder('HID')] })); // h
 };
 
-const BOOK = '/Readest/books/h/book.epub';
+const BOOK = '/Moyue/books/h/book.epub';
 
 describe('GoogleDriveProvider — streaming', () => {
   // The native-transfer mocks are module-level (shared); clear call history

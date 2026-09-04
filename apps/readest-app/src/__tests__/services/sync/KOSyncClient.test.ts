@@ -16,7 +16,7 @@ const makeConfig = (overrides: Partial<KOSyncSettings> = {}): KOSyncSettings => 
   userkey: '',
   password: '',
   deviceId: 'device-1',
-  deviceName: 'Readest',
+  deviceName: 'Moyue',
   checksumMethod: 'binary',
   strategy: 'prompt',
   ...overrides,

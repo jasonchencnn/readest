@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
 /**
- * Regression guard: iOS Files preview/share sheet lost Readest for supported
+ * Regression guard: iOS Files preview/share sheet lost Moyue for supported
  * document types in 0.11.20 (worked in 0.11.18).
  *
  * The app's plain-text claim used to come from the hand-tuned
@@ -14,7 +14,7 @@ import { resolve } from 'path';
  * and inserts the key AFTER the custom-plist merge, replacing the
  * hand-tuned array. The generated entries omitted `LSItemContentTypes` for
  * every format Tauri could not infer from a short built-in mapping, including
- * EPUB, MOBI, AZW, FB2, and CBZ. iOS therefore stopped offering Readest for
+ * EPUB, MOBI, AZW, FB2, and CBZ. iOS therefore stopped offering Moyue for
  * those files even though their extensions still appeared in the plist.
  *
  * The durable fix is declaring `contentTypes` in `bundle.fileAssociations` so

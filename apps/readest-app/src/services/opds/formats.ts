@@ -24,7 +24,7 @@ const INFERENCE_RULES: ReadonlyArray<{ mime: string; href: RegExp; title: RegExp
   { mime: 'application/x-fictionbook+xml', href: /\.fb2(?:[?#]|$)/i, title: /\bfb2\b/i },
 ];
 
-// Media types that positively identify a document Readest cannot import.
+// Media types that positively identify a document Moyue cannot import.
 // `text/html` is deliberately absent -- the download handler opens it in a
 // browser instead, so it stays a usable path.
 const UNSUPPORTED_MIMETYPES = [
@@ -33,7 +33,7 @@ const UNSUPPORTED_MIMETYPES = [
   'application/vnd.adobe.adept+xml;type=other',
 ];
 
-// Ebook formats Readest cannot open, distinctive enough to match anywhere in a
+// Ebook formats Moyue cannot open, distinctive enough to match anywhere in a
 // link's path or title. Calibre names the format in the URL
 // (`/get/kfx/56/Calibre_Library`) and Calibre-Web puts it in the last segment
 // (`/opds/download/123/lit/`), so a bare extension check is not enough.
@@ -105,7 +105,7 @@ export const getFormatExt = (link: FormatLink): string => {
 /**
  * Best human-readable name for the link's format, '' when it cannot be named.
  *
- * Unlike getFormatExt this also names formats Readest cannot import, so a menu
+ * Unlike getFormatExt this also names formats Moyue cannot import, so a menu
  * listing them stays distinguishable instead of repeating a generic label.
  */
 export const getFormatName = (link: FormatLink): string => {
@@ -122,7 +122,7 @@ export const getFormatName = (link: FormatLink): string => {
 };
 
 /**
- * Whether Readest can import what this acquisition link points at.
+ * Whether Moyue can import what this acquisition link points at.
  *
  * Deliberately asymmetric: a link is only reported `unsupported` when its
  * format is positively named as one we cannot open. Href extensions lie
@@ -165,7 +165,7 @@ const isAdvancedEpub = (link: FormatLink, mediaType: string): boolean => {
 };
 
 /**
- * Rank a link by how well Readest reads the format:
+ * Rank a link by how well Moyue reads the format:
  * Advanced EPUB / EPUB3 > EPUB > MOBI/AZW/AZW3 > PDF/CBZ > other.
  */
 export const getFormatTier = (link: FormatLink): FormatTier => {
@@ -186,7 +186,7 @@ export const getFormatTier = (link: FormatLink): FormatTier => {
   return 4;
 };
 
-/** The link Readest would rather download, by format tier then feed order. */
+/** The link Moyue would rather download, by format tier then feed order. */
 export const pickPreferredLink = <T extends FormatLink>(links: T[]): T | undefined => {
   let best = links[0];
   if (!best) return undefined;

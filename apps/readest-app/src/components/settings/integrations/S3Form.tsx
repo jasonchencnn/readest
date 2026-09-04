@@ -75,7 +75,7 @@ const S3Form: React.FC = () => {
     try {
       // One signed listing under the sync namespace validates endpoint,
       // bucket, and keys in a single round-trip (empty result included).
-      await createS3Provider(draft).list('/Readest');
+      await createS3Provider(draft).list('/Moyue');
     } catch (e) {
       eventDispatcher.dispatch('toast', {
         type: 'error',
@@ -164,7 +164,7 @@ const S3Form: React.FC = () => {
         <input
           id='s3-bucket'
           type='text'
-          placeholder='readest'
+          placeholder='moyue'
           className='input input-bordered eink-bordered h-11 w-full text-sm focus:outline-none'
           spellCheck='false'
           value={bucket}

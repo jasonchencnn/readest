@@ -281,7 +281,7 @@ describe('convertAnnotationExportToBookNotes', () => {
     expect(moved.xpointer1).toBeUndefined();
   });
 
-  // Readest bookmarks carry a `text` snippet of the surrounding paragraph purely
+  // Moyue bookmarks carry a `text` snippet of the surrounding paragraph purely
   // for display in the bookmark list. It is routinely truncated, sometimes a
   // chapter label, and their CFI is often a collapsed point covering no text at
   // all — so a bookmark's text must never be treated as an anchor assertion.
@@ -372,7 +372,7 @@ describe('convertAnnotationExportToBookNotes', () => {
   });
 
   it('round-trips export -> file -> import without moving any anchor', async () => {
-    // The feature's core promise: what Readest writes, Readest reads back
+    // The feature's core promise: what Moyue writes, Moyue reads back
     // into the same book with every highlight landing where it started.
     const notes: BookNote[] = [
       makeNote({

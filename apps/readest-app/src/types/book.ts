@@ -365,7 +365,7 @@ export interface TranslatorConfig {
 }
 
 // Markdown and plain text render the note template; JSON emits the
-// machine-readable file that Readest itself can import back (#5400).
+// machine-readable file that Moyue itself can import back (#5400).
 export type NoteExportFormat = 'markdown' | 'text' | 'json';
 
 export interface NoteExportConfig {

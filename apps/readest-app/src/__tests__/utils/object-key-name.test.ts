@@ -5,20 +5,20 @@ import { isSafeObjectKeyName } from '@/utils/object';
 // from a client-controlled `fileName`. The R2 signer interpolates it into
 // `new Request(url)`, whose URL parser collapses `../` before signing — so a
 // crafted name escapes the caller's `${user.id}/` prefix into another tenant's
-// namespace. fileName legitimately contains '/' (Readest/Books/..., Replicas),
+// namespace. fileName legitimately contains '/' (Moyue/Books/..., Replicas),
 // so we reject traversal/absolute/backslash forms rather than separators.
 describe('isSafeObjectKeyName', () => {
   it('accepts the legitimate book / replica / cover key shapes', () => {
-    expect(isSafeObjectKeyName('Readest/Books/abc123.epub')).toBe(true);
-    expect(isSafeObjectKeyName('Readest/Replicas/dict/id-1/data.bin')).toBe(true);
+    expect(isSafeObjectKeyName('Moyue/Books/abc123.epub')).toBe(true);
+    expect(isSafeObjectKeyName('Moyue/Replicas/dict/id-1/data.bin')).toBe(true);
     expect(isSafeObjectKeyName('cover.png')).toBe(true);
     expect(isSafeObjectKeyName('My Book (2024).epub')).toBe(true);
     expect(isSafeObjectKeyName('A&B.epub')).toBe(true);
   });
 
   it('rejects parent-directory traversal segments', () => {
-    expect(isSafeObjectKeyName('../victim/Readest/Book/h/book.epub')).toBe(false);
-    expect(isSafeObjectKeyName('Readest/../../victim/book.epub')).toBe(false);
+    expect(isSafeObjectKeyName('../victim/Moyue/Book/h/book.epub')).toBe(false);
+    expect(isSafeObjectKeyName('Moyue/../../victim/book.epub')).toBe(false);
     expect(isSafeObjectKeyName('..')).toBe(false);
     expect(isSafeObjectKeyName('a/../b')).toBe(false);
   });

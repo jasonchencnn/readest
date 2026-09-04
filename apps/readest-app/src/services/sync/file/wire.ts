@@ -2,7 +2,7 @@ import { Book, BookConfig, BookNote } from '@/types/book';
 
 /**
  * Per-book remote payload stored at
- *   <rootPath>/Readest/books/<hash>/config.json
+ *   <rootPath>/Moyue/books/<hash>/config.json
  *
  * The wire format is a thin envelope around the existing local
  * `BookConfig` so the merge logic can stay identical to readest's other
@@ -105,7 +105,7 @@ export const parseRemotePayload = (raw: string | null): RemoteBookConfig | null 
 };
 
 /**
- * The shared `<rootPath>/Readest/library.json` index. Membership is a
+ * The shared `<rootPath>/Moyue/library.json` index. Membership is a
  * union-by-hash CRDT (with `deletedAt` tombstones); per-book metadata is
  * last-writer-wins on `book.updatedAt`. See merge.ts for the policies.
  */

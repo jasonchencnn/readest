@@ -7,8 +7,8 @@
  * Shape of the mapping:
  *
  *  - **Path-style addressing.** Every logical sync path maps 1:1 to an object
- *    key under `<endpoint>/<bucket>/` (`/Readest/books/<hash>/config.json` →
- *    key `Readest/books/<hash>/config.json`). No id resolution, no caches —
+ *    key under `<endpoint>/<bucket>/` (`/Moyue/books/<hash>/config.json` →
+ *    key `Moyue/books/<hash>/config.json`). No id resolution, no caches —
  *    unlike Drive, one logical operation is one HTTP request.
  *  - **Object stores have no directories.** `ensureDir` is a no-op; `list`
  *    emulates a directory with `ListObjectsV2` + `delimiter=/` (CommonPrefixes

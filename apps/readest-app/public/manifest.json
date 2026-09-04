@@ -1,10 +1,10 @@
 {
-  "name": "Readest",
-  "short_name": "Readest",
+  "name": "墨阅",
+  "short_name": "墨阅",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "description": "Readest is an open-source eBook reader supporting EPUB, PDF, and sync across devices.",
+  "description": "墨阅是一款支持 EPUB、PDF 的开源阅读器，可在多设备间同步。",
   "icons": [
     {
       "src": "/icon.png",

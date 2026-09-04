@@ -1,12 +1,12 @@
 /**
- * Full-page redirect OAuth for OneDrive on the Readest **web** build, using the
+ * Full-page redirect OAuth for OneDrive on the Moyue **web** build, using the
  * authorization-code + PKCE flow (unlike gdrive's implicit flow): Microsoft's
  * SPA token endpoint is CORS-enabled, so a secretless browser client can do the
  * code exchange itself and receives a rotating refresh token. That lets the
  * shared `PersistedOAuth` refresh transparently on web too, instead of gdrive's
  * session-only access token that forces a reconnect every tab session.
  *
- * Full-page (not popup) for the same reason as gdrive: Readest web serves
+ * Full-page (not popup) for the same reason as gdrive: Moyue web serves
  * `Cross-Origin-Opener-Policy: same-origin` (for Turso's SharedArrayBuffer),
  * which severs a popup's `window.opener` handle and breaks popup OAuth.
  *

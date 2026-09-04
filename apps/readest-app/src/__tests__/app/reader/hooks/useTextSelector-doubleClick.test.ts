@@ -194,7 +194,7 @@ describe('useTextSelector double-click word selection', () => {
     await result.current.handleDoubleClick(doc, 0, 50, 50);
 
     // Keep the browser's live selection untouched. Only the Range captured by
-    // Readest is normalized, avoiding native touch-handle rewrites (#1553).
+    // Moyue is normalized, avoiding native touch-handle rewrites (#1553).
     expect(sel.toString()).toBe('world ');
     expect(setSelection).toHaveBeenCalledTimes(1);
     const arg = setSelection.mock.calls[0]![0] as TextSelection;

@@ -10,7 +10,7 @@
  * which makes the security-critical glue (state/PKCE handling) unit-testable
  * headlessly while the desktop/mobile wrappers supply the real wiring.
  *
- * Adapted from ratatabananana-bit/Readest-google-drive-mod-patcher (AGPL-3.0),
+ * Adapted from ratatabananana-bit/Moyue-google-drive-mod-patcher (AGPL-3.0),
  * used with the author's explicit permission.
  */
 import { buildAuthUrl } from './pkce';

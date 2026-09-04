@@ -296,9 +296,9 @@ describe('FileSyncEngine soft-delete propagation', () => {
     // must keep the discovery pass from re-adding it as a cloud-shelf candidate.
     provider.list = vi.fn(async (path: string) => {
       if (path.endsWith('/books'))
-        return [{ name: 'h1', path: '/Readest/books/h1', isDirectory: true }];
+        return [{ name: 'h1', path: '/Moyue/books/h1', isDirectory: true }];
       if (path.endsWith('/h1'))
-        return [{ name: 'book.epub', path: '/Readest/books/h1/book.epub', isDirectory: false }];
+        return [{ name: 'book.epub', path: '/Moyue/books/h1/book.epub', isDirectory: false }];
       return [];
     });
     const addBookToLibrary = vi.fn(async (_book: Book) => {});

@@ -25,7 +25,7 @@ describe('classifyAcquisitionLink', () => {
       ).toBe('supported');
     });
 
-    it('accepts every format Readest can import', () => {
+    it('accepts every format Moyue can import', () => {
       const hrefs = [
         '/dl/book.epub',
         '/dl/book.mobi',
@@ -149,7 +149,7 @@ describe('getFormatExt', () => {
 describe('getFormatName', () => {
   // A menu listing incompatible formats has to tell them apart; getFormatExt
   // returns '' for those, which would render every entry identically.
-  it('names formats Readest cannot import', () => {
+  it('names formats Moyue cannot import', () => {
     expect(getFormatName(link({ href: '/get/kfx/1/lib' }))).toBe('kfx');
     expect(getFormatName(link({ href: '/get/lit/1/lib' }))).toBe('lit');
     expect(getFormatName(link({ href: '/dl/book.rtf' }))).toBe('rtf');

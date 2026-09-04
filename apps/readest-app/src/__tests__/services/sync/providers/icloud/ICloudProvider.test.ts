@@ -129,7 +129,7 @@ beforeEach(() => {
   state.dirs.clear();
   state.forbidden = false;
   state.ensureDownloadedCalls = [];
-  for (const dir of [DOCS, abs('/Readest'), abs('/Readest/books')]) state.dirs.add(dir);
+  for (const dir of [DOCS, abs('/Moyue'), abs('/Moyue/books')]) state.dirs.add(dir);
 });
 
 runSemanticContract('iCloud', () => ({
@@ -144,62 +144,62 @@ describe('ICloudProvider specifics', () => {
   const provider = () => createICloudProvider(DOCS);
 
   test('readText materialises a placeholder before reading', async () => {
-    state.files.set(abs('/Readest/.library.json.icloud'), 'placeholder');
-    expect(await provider().readText('/Readest/library.json')).toBe('downloaded');
-    expect(state.ensureDownloadedCalls).toContain(abs('/Readest/library.json'));
+    state.files.set(abs('/Moyue/.library.json.icloud'), 'placeholder');
+    expect(await provider().readText('/Moyue/library.json')).toBe('downloaded');
+    expect(state.ensureDownloadedCalls).toContain(abs('/Moyue/library.json'));
   });
 
   test('writeText is atomic: writes a temp file then renames, leaving no strays', async () => {
-    await provider().writeText('/Readest/library.json', '{"v":1}');
-    expect(state.files.get(abs('/Readest/library.json'))).toBe('{"v":1}');
+    await provider().writeText('/Moyue/library.json', '{"v":1}');
+    expect(state.files.get(abs('/Moyue/library.json'))).toBe('{"v":1}');
     expect([...state.files.keys()].filter((k) => k.includes('.readest-tmp-'))).toEqual([]);
   });
 
   test('list coalesces .icloud placeholders and hides dot files', async () => {
-    state.files.set(abs('/Readest/books/aaa.epub'), 'x');
-    state.files.set(abs('/Readest/books/.bbb.epub.icloud'), 'p');
-    state.files.set(abs('/Readest/books/.DS_Store'), 'junk');
-    state.files.set(abs('/Readest/books/.readest-tmp-zz'), 'tmp');
-    const entries = await provider().list('/Readest/books');
+    state.files.set(abs('/Moyue/books/aaa.epub'), 'x');
+    state.files.set(abs('/Moyue/books/.bbb.epub.icloud'), 'p');
+    state.files.set(abs('/Moyue/books/.DS_Store'), 'junk');
+    state.files.set(abs('/Moyue/books/.readest-tmp-zz'), 'tmp');
+    const entries = await provider().list('/Moyue/books');
     expect(entries.map((e) => e.name).sort()).toEqual(['aaa.epub', 'bbb.epub']);
     const placeholder = entries.find((e) => e.name === 'bbb.epub')!;
-    expect(placeholder.path).toBe('/Readest/books/bbb.epub');
+    expect(placeholder.path).toBe('/Moyue/books/bbb.epub');
     expect(placeholder.size).toBeUndefined();
   });
 
   test('head reports a placeholder-only file as existing without downloading it', async () => {
-    state.files.set(abs('/Readest/books/.big.epub.icloud'), 'p');
-    expect(await provider().head('/Readest/books/big.epub')).toEqual({});
+    state.files.set(abs('/Moyue/books/.big.epub.icloud'), 'p');
+    expect(await provider().head('/Moyue/books/big.epub')).toEqual({});
     expect(state.ensureDownloadedCalls).toEqual([]);
   });
 
   test('ensureDir is idempotent and deleteDir removes recursively', async () => {
-    await provider().ensureDir(['/Readest', '/Readest/books', '/Readest/books/h1']);
-    await provider().ensureDir(['/Readest/books/h1']);
-    state.files.set(abs('/Readest/books/h1/config.json'), '{}');
-    await provider().deleteDir('/Readest/books/h1');
-    expect(state.files.has(abs('/Readest/books/h1/config.json'))).toBe(false);
+    await provider().ensureDir(['/Moyue', '/Moyue/books', '/Moyue/books/h1']);
+    await provider().ensureDir(['/Moyue/books/h1']);
+    state.files.set(abs('/Moyue/books/h1/config.json'), '{}');
+    await provider().deleteDir('/Moyue/books/h1');
+    expect(state.files.has(abs('/Moyue/books/h1/config.json'))).toBe(false);
   });
 
   test('uploadStream copies via a temp file; downloadStream materialises first', async () => {
     state.files.set('/appdata/books/h1/book.epub', 'bytes');
     expect(
-      await provider().uploadStream!('/Readest/books/h1/book.epub', '/appdata/books/h1/book.epub'),
+      await provider().uploadStream!('/Moyue/books/h1/book.epub', '/appdata/books/h1/book.epub'),
     ).toBe(true);
-    expect(state.files.get(abs('/Readest/books/h1/book.epub'))).toBe('bytes');
+    expect(state.files.get(abs('/Moyue/books/h1/book.epub'))).toBe('bytes');
 
-    state.files.delete(abs('/Readest/books/h1/book.epub'));
-    state.files.set(abs('/Readest/books/h1/.book.epub.icloud'), 'p');
-    expect(
-      await provider().downloadStream!('/Readest/books/h1/book.epub', '/appdata/out.epub'),
-    ).toBe(true);
+    state.files.delete(abs('/Moyue/books/h1/book.epub'));
+    state.files.set(abs('/Moyue/books/h1/.book.epub.icloud'), 'p');
+    expect(await provider().downloadStream!('/Moyue/books/h1/book.epub', '/appdata/out.epub')).toBe(
+      true,
+    );
     expect(state.files.get('/appdata/out.epub')).toBe('downloaded');
   });
 
   test('a forbidden-path failure surfaces as AUTH_FAILED', async () => {
     state.forbidden = true;
     const err = await provider()
-      .writeText('/Readest/library.json', '{}')
+      .writeText('/Moyue/library.json', '{}')
       .catch((e: unknown) => e);
     expect(err).toBeInstanceOf(FileSyncError);
     expect((err as FileSyncError).code).toBe('AUTH_FAILED');

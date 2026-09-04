@@ -8,7 +8,7 @@
 // foliate-js parses SMIL too (`MediaOverlay` in epub.js), but only for its
 // standalone player: it flattens pars with a `getElementsByTagName` sweep and
 // keeps nothing this side needs. We parse here instead so playback can run
-// through Readest's own TTS machinery, and so <seq> nesting survives (the hook
+// through Moyue's own TTS machinery, and so <seq> nesting survives (the hook
 // skippability would need).
 
 export interface SmilPar {

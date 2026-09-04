@@ -350,7 +350,7 @@ describe('PublicationView', () => {
       return onDownload;
     };
 
-    it('hides formats Readest cannot import, collapsing to a one-click download', () => {
+    it('hides formats Moyue cannot import, collapsing to a one-click download', () => {
       const onDownload = renderWith([
         acq('/get/kfx/56/Calibre_Library'),
         acq('/get/epub/56/Calibre_Library', 'application/epub+zip'),

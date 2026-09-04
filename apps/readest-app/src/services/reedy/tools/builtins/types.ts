@@ -12,7 +12,7 @@ export interface ReadingContextSnapshot {
   cfi: string | null;
   sectionIndex: number;
   chapterTitle: string | null;
-  /** Page number in Readest's 1500-chars-per-page formula. */
+  /** Page number in Moyue's 1500-chars-per-page formula. */
   pageNumber: number;
   /** Active text selection, if any. */
   selection?: {

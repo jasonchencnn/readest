@@ -127,7 +127,7 @@ export function getReferencePageInfo({
  * the BOOK — its print edition — not this screen. That makes it the one
  * `viewSettings` key that has to cross devices, and both sync backends call
  * this so the two can never drift apart: `useProgressSync.applyRemoteProgress`
- * for the Readest cloud, `mergeBookConfig` for the file-sync providers.
+ * for the Moyue cloud, `mergeBookConfig` for the file-sync providers.
  *
  * A device with no count always adopts a peer's, regardless of which config is
  * newer — the common case is that the peer typed the count first and this

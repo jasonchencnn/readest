@@ -69,7 +69,7 @@ function createMockFs(): FileSystem {
       atime: null,
       birthtime: null,
     }),
-    getPrefix: vi.fn().mockResolvedValue('Readest/Books'),
+    getPrefix: vi.fn().mockResolvedValue('Moyue/Books'),
   };
 }
 
@@ -236,7 +236,7 @@ describe('cloudService', () => {
         await deleteBook(mockFs, book, 'purge');
 
         // The user's original "read in place" file lives outside Books/<hash>/
-        // and must be left untouched — deleting a book from Readest never
+        // and must be left untouched — deleting a book from Moyue never
         // removes the user's source file.
         expect(mockFs.removeFile).not.toHaveBeenCalledWith('/Users/me/Library/sample.epub', 'None');
         // ...but the app-generated metadata sidecar directory is still wiped.
@@ -299,9 +299,9 @@ describe('cloudService', () => {
     });
 
     // In-place imports ("Read books in place") keep their content at a
-    // user-controlled location (book.filePath, base 'None') OUTSIDE Readest's
-    // Books/<hash>/ dir — Readest never copied it. Deleting such a book from
-    // Readest must NEVER remove that source file; only the app-generated
+    // user-controlled location (book.filePath, base 'None') OUTSIDE Moyue's
+    // Books/<hash>/ dir — Moyue never copied it. Deleting such a book from
+    // Moyue must NEVER remove that source file; only the app-generated
     // sidecars (cover.png, config.json, ...) under Books/<hash>/ are ours to
     // delete. The cloud upload path is shared, so cross-device sync can still
     // pull the book back. (Regression: in-place delete used to wipe the
@@ -321,7 +321,7 @@ describe('cloudService', () => {
         await deleteBook(mockFs, book, 'local');
 
         // The external source (base 'None', absolute path) is the user's own
-        // file and must survive a Readest-side delete.
+        // file and must survive a Moyue-side delete.
         expect(mockFs.removeFile).not.toHaveBeenCalledWith('/Users/me/Library/sample.epub', 'None');
       });
 

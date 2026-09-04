@@ -8,7 +8,7 @@
  * — registered as a BROWSABLE deep-link intent-filter so the OS routes the
  * redirect back to the app.
  *
- * Consent opens in a CHROME CUSTOM TAB via Readest's native bridge command
+ * Consent opens in a CHROME CUSTOM TAB via Moyue's native bridge command
  * `auth_with_custom_tab` (the same one the Supabase login uses), NOT an external
  * browser: a separate browser app backgrounds the single Tauri Activity and the
  * OS can destroy it under memory pressure, tearing down the in-flight promise +
@@ -25,7 +25,7 @@
  * is off — an Android device can't produce an iOS attestation, so enabling it
  * would break every user; keep it off.
  *
- * Adapted from ratatabananana-bit/Readest-google-drive-mod-patcher (AGPL-3.0),
+ * Adapted from ratatabananana-bit/Moyue-google-drive-mod-patcher (AGPL-3.0),
  * used with the author's explicit permission.
  */
 import { authWithCustomTab } from '@/app/auth/utils/nativeAuth';

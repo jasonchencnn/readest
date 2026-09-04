@@ -18,7 +18,7 @@ import { createOneDriveTokenPersistence } from './onedriveTokenStore';
 import { webOneDriveTokenPersistence } from './webAuthCodeFlow';
 
 /**
- * Official Readest Microsoft (Azure) app registration client id, baked into the
+ * Official Moyue Microsoft (Azure) app registration client id, baked into the
  * build so OneDrive sync works out of the box. One public client serves every
  * platform (native custom-scheme redirect + web SPA redirect). Not a secret — it
  * ships inside the app binary, like the Google client id. A forker overrides it

@@ -4,7 +4,7 @@
  * authorization endpoint and any extra query params are provider-specific and
  * supplied by the caller (see {@link AuthUrlParams}).
  *
- * Readest ships as a distributed native app (desktop + mobile). Such public
+ * Moyue ships as a distributed native app (desktop + mobile). Such public
  * clients cannot keep a client secret confidential, so the flow uses PKCE
  * instead: each authorization attempt mints a fresh random `verifier`, sends
  * only its SHA-256 `challenge` to the authorization endpoint, and later proves
@@ -13,7 +13,7 @@
  *
  * Pure functions only — no network, no platform APIs beyond Web Crypto.
  *
- * Adapted from ratatabananana-bit/Readest-google-drive-mod-patcher (AGPL-3.0),
+ * Adapted from ratatabananana-bit/Moyue-google-drive-mod-patcher (AGPL-3.0),
  * used with the author's explicit permission.
  */
 

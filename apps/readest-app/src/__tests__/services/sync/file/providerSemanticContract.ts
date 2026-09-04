@@ -24,19 +24,19 @@ export const runSemanticContract = (name: string, makeScenario: () => ProviderSc
     test('readText resolves null for an absent path', async () => {
       const s = makeScenario();
       s.stageAbsent();
-      expect(await s.makeProvider().readText('/Readest/x.json')).toBeNull();
+      expect(await s.makeProvider().readText('/Moyue/x.json')).toBeNull();
     });
 
     test('readBinary resolves null for an absent path', async () => {
       const s = makeScenario();
       s.stageAbsent();
-      expect(await s.makeProvider().readBinary('/Readest/x.bin')).toBeNull();
+      expect(await s.makeProvider().readBinary('/Moyue/x.bin')).toBeNull();
     });
 
     test('head resolves null for an absent path', async () => {
       const s = makeScenario();
       s.stageAbsent();
-      expect(await s.makeProvider().head('/Readest/x')).toBeNull();
+      expect(await s.makeProvider().head('/Moyue/x')).toBeNull();
     });
 
     test('readText maps an auth failure to FileSyncError AUTH_FAILED', async () => {
@@ -44,7 +44,7 @@ export const runSemanticContract = (name: string, makeScenario: () => ProviderSc
       s.stageAuthFailure();
       const err = await s
         .makeProvider()
-        .readText('/Readest/x.json')
+        .readText('/Moyue/x.json')
         .catch((e: unknown) => e);
       expect(err).toBeInstanceOf(FileSyncError);
       expect((err as FileSyncError).code).toBe('AUTH_FAILED');
@@ -55,7 +55,7 @@ export const runSemanticContract = (name: string, makeScenario: () => ProviderSc
       s.stageAuthFailure();
       const err = await s
         .makeProvider()
-        .list('/Readest/books')
+        .list('/Moyue/books')
         .catch((e: unknown) => e);
       expect(err).toBeInstanceOf(FileSyncError);
       expect((err as FileSyncError).code).toBe('AUTH_FAILED');
@@ -64,7 +64,7 @@ export const runSemanticContract = (name: string, makeScenario: () => ProviderSc
     test('deleteDir treats an absent target as success', async () => {
       const s = makeScenario();
       s.stageAbsent();
-      await expect(s.makeProvider().deleteDir('/Readest/books/gone')).resolves.toBeUndefined();
+      await expect(s.makeProvider().deleteDir('/Moyue/books/gone')).resolves.toBeUndefined();
     });
   });
 };

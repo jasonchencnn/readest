@@ -331,7 +331,7 @@ export function PublicationView({
                 const validLinks = links.filter((l) => l.href);
                 if (validLinks.length === 0) return null;
 
-                // Drop formats Readest cannot import — unless that would leave
+                // Drop formats Moyue cannot import — unless that would leave
                 // nothing, in which case the incompatible links are still the
                 // only path this book has (#5583).
                 const compatible = validLinks.filter(

@@ -51,7 +51,7 @@ function isSafeAcquisitionLink(link: AnyAcqLink): link is ValidAcqLink {
  *
  * 1. Filter to safe rels (acquisition / acquisition/open-access), drop
  *    indirect links — leaves entries we can fetch directly.
- * 2. Drop formats Readest cannot import — downloading them only to fail at
+ * 2. Drop formats Moyue cannot import — downloading them only to fail at
  *    import wastes the transfer and leaves a failed entry behind (#5583).
  * 3. Prefer open-access over plain acquisition.
  * 4. Within those, rank by format tier:

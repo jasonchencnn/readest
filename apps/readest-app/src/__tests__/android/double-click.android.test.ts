@@ -21,7 +21,7 @@ import {
 // disableDoubleClick: false — the setting a user who wants the gesture turns
 // on — and restores the previous value afterwards.
 //
-// Runs against any adb device/emulator with a debug Readest build installed;
+// Runs against any adb device/emulator with a debug Moyue build installed;
 // soft-skips otherwise.
 
 const FIXTURE = path.resolve(__dirname, '../fixtures/data/sample-alice.epub');
@@ -76,7 +76,7 @@ const hasAnnotPopup = (page: CdpPage) =>
 
 const env = await detectAndroidEnv();
 if (!env) {
-  console.warn('[test:android] no adb device with Readest installed — skipping the Android lane');
+  console.warn('[test:android] no adb device with Moyue installed — skipping the Android lane');
 }
 
 describe.runIf(env)('Android double-tap word selection + toolbar', () => {

@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
 /**
- * Regression guard: sharing a `.txt` file to Readest on iOS got stuck.
+ * Regression guard: sharing a `.txt` file to Moyue on iOS got stuck.
  *
  * The Share Extension (added in #4256 / #4267) is an article-URL clipper — its
  * `ShareViewController` only ever extracts an http(s) URL from the shared item.
@@ -11,7 +11,7 @@ import { resolve } from 'path';
  * file is UTI `public.plain-text` (which conforms to `public.text`), so that key
  * made the extension activate for plain-text FILES it cannot handle: the share
  * sheet hung instead of the file taking the main app's CFBundleDocumentTypes
- * "Copy to Readest" open-in-place path (which imports txt fine, exactly like the
+ * "Copy to Moyue" open-in-place path (which imports txt fine, exactly like the
  * EPUB/PDF that never matched the extension).
  *
  * Fix: the extension activates only for web URLs, never for text — so `.txt`

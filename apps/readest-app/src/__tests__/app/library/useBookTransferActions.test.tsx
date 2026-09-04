@@ -9,7 +9,7 @@ import { INDETERMINATE_PROGRESS, type ProgressHandler } from '@/utils/transfer';
 
 /**
  * Issue #5062 — cloud sync providers are independently selectable, so a
- * per-book Upload/Download must route to whichever of {Readest Cloud, a file
+ * per-book Upload/Download must route to whichever of {Moyue Cloud, a file
  * backend} the user has switched on, instead of assuming exactly one.
  *
  * `isReadestCloudEnabled` and `getActiveFileSyncBackends` are settable per
@@ -102,7 +102,7 @@ beforeEach(() => {
 });
 
 describe('useBookTransferActions upload routing (issue #5062)', () => {
-  it('reaches every enabled destination when Readest Cloud and a file backend are both on', async () => {
+  it('reaches every enabled destination when Moyue Cloud and a file backend are both on', async () => {
     routing.readestEnabled = true;
     routing.backends = ['gdrive'];
 
@@ -150,7 +150,7 @@ describe('useBookTransferActions download routing (issue #5062)', () => {
     expect(ok).toBe(true);
   });
 
-  it('falls back to Readest Cloud when no enabled file mirror holds the book', async () => {
+  it('falls back to Moyue Cloud when no enabled file mirror holds the book', async () => {
     routing.readestEnabled = true;
     routing.backends = ['webdav'];
     runFileBookDownload.mockResolvedValueOnce(false);
@@ -164,7 +164,7 @@ describe('useBookTransferActions download routing (issue #5062)', () => {
     expect(ok).toBe(true);
   });
 
-  it('falls back to an immediate Readest Cloud download when opening a cloud-shelf book', async () => {
+  it('falls back to an immediate Moyue Cloud download when opening a cloud-shelf book', async () => {
     routing.readestEnabled = true;
     routing.backends = ['webdav'];
     runFileBookDownload.mockResolvedValueOnce(false);
@@ -181,7 +181,7 @@ describe('useBookTransferActions download routing (issue #5062)', () => {
     expect(ok).toBe(true);
   });
 
-  it('falls back to a file backend when the book is not in Readest Cloud storage', async () => {
+  it('falls back to a file backend when the book is not in Moyue Cloud storage', async () => {
     routing.readestEnabled = true;
     routing.backends = ['webdav'];
 

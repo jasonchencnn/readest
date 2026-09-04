@@ -33,7 +33,7 @@ export interface FileSyncBackendsSettings {
  * One provider is memoised PER BACKEND and shared by every surface (the reader's
  * per-book sync, the library auto-sync, Sync now / pull to refresh). What makes
  * reuse worth it is the provider's path->id cache (Drive): a cold provider
- * re-resolves /Readest, books/ and library.json by name query on every engine
+ * re-resolves /Moyue, books/ and library.json by name query on every engine
  * build, so one engine per book open/close/sync turned each user action into a
  * burst of redundant remote requests.
  *

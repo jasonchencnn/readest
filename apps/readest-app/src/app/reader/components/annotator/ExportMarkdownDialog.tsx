@@ -79,7 +79,7 @@ const ExportMarkdownDialog: React.FC<ExportMarkdownDialogProps> = ({
 {% endif %}## {{ title }}
 **${_('Author')}**: {{ author }}
 
-**${_('Exported from Readest')}**: {{ exportDate | date('%Y-%m-%d') }}
+**${_('Exported from Moyue')}**: {{ exportDate | date('%Y-%m-%d') }}
 
 ---
 
@@ -320,7 +320,7 @@ const ExportMarkdownDialog: React.FC<ExportMarkdownDialogProps> = ({
 
       // Add export date
       if (exportConfig.includeDate) {
-        lines.push(`**${_('Exported from Readest')}**: ${new Date().toISOString().slice(0, 10)}`);
+        lines.push(`**${_('Exported from Moyue')}**: ${new Date().toISOString().slice(0, 10)}`);
         lines.push('');
       }
 
@@ -469,13 +469,13 @@ const ExportMarkdownDialog: React.FC<ExportMarkdownDialogProps> = ({
           >
             <option value='markdown'>{_('Markdown')}</option>
             <option value='text'>{_('Plain Text')}</option>
-            <option value='json'>{_('JSON (Readest)')}</option>
+            <option value='json'>{_('JSON (Moyue)')}</option>
           </select>
         </div>
 
         {isJson && (
           <p className='text-base-content/70 text-xs'>
-            {_('A machine-readable file that Readest can import back into any book.')}
+            {_('A machine-readable file that Moyue can import back into any book.')}
           </p>
         )}
 
@@ -822,7 +822,7 @@ const ExportMarkdownDialog: React.FC<ExportMarkdownDialogProps> = ({
                           </li>
                           <li className='ml-8'>
                             <code className='bg-base-300 rounded px-1'>annotation.appLink</code> -{' '}
-                            {_('App deeplink (readest://)')}
+                            {_('App deeplink (moyue://)')}
                           </li>
                           <li className='ml-8'>
                             <code className='bg-base-300 rounded px-1'>annotation.webLink</code> -{' '}

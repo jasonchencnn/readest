@@ -502,7 +502,7 @@ const getPageLayoutStyles = (
   img.has-text-siblings {
     ${vertical ? 'width: 1em;' : 'height: 1em;'}
   }
-  /* Baseline is only Readest's default: applyImageStyle adds this class when the
+  /* Baseline is only Moyue's default: applyImageStyle adds this class when the
      book leaves vertical-align at its initial value, so an author-set value
      (e.g. a CJK glyph-substitution image nudged with vertical-align: -0.15em)
      keeps winning. See #4866. */
@@ -1335,7 +1335,7 @@ export const applyImageStyle = (document: Document) => {
       );
       inlineWithText = hasTextSiblings && isInline;
       if (inlineWithText) {
-        // Only supply Readest's baseline default when the book leaves
+        // Only supply Moyue's baseline default when the book leaves
         // vertical-align at its initial value; an author-set value (e.g. a CJK
         // glyph-substitution image nudged with `vertical-align: -0.15em`) must
         // win. Empty string covers environments that report unset props as ''.

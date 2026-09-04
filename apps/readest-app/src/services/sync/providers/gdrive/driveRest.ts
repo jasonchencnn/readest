@@ -12,9 +12,9 @@
  *
  * No `fetch`, no auth, no state — every export is a deterministic string builder.
  *
- * Adapted from ratatabananana-bit/Readest-google-drive-mod-patcher (AGPL-3.0),
+ * Adapted from ratatabananana-bit/Moyue-google-drive-mod-patcher (AGPL-3.0),
  * used with the author's explicit permission. Pagination + `about.get` added for
- * Readest.
+ * Moyue.
  */
 
 /** Drive REST collection endpoint for file *metadata* operations (list/get/patch/delete). */

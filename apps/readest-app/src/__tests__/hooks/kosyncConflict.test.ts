@@ -153,7 +153,7 @@ describe('decideRemoteConflict', () => {
 
   it('ALWAYS flags a conflict for an unresolved XPointer, even when the percentages match (#5065)', () => {
     // This is the core regression: KOReader's percentage happening to equal
-    // Readest's must never be read as "no conflict" when the position could
+    // Moyue's must never be read as "no conflict" when the position could
     // not be resolved. Before the fix this returned false → the remote
     // position was silently dropped and auto-push clobbered it.
     const resolution: RemoteFractionResolution = { status: 'unresolved' };

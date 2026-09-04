@@ -166,7 +166,7 @@ describe('convertPageToEpub — locally opened file:// page', () => {
 
   test('titles an untitled local page after its file, not its path', async () => {
     // The path would otherwise land in the library as the book title and,
-    // via `X-Readest-Title`, on the server.
+    // via `X-Moyue-Title`, on the server.
     const untitled = `<!doctype html><html><body><article>
       <p>${BODY}</p><p>${BODY}</p>
     </article></body></html>`;

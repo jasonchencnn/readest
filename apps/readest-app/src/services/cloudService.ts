@@ -26,11 +26,11 @@ export async function deleteBook(
 ): Promise<void> {
   if (deleteAction === 'local' || deleteAction === 'both' || deleteAction === 'purge') {
     const source = await resolveBookContentSource(fs, book);
-    // Only remove files Readest itself created. A 'managed' source lives under
+    // Only remove files Moyue itself created. A 'managed' source lives under
     // our Books/<hash>/ dir (a copy we made on import), so it is ours to delete.
     // An 'external' source is the user's own file at a user-controlled location
     // (book.filePath, base 'None') — e.g. a "Read books in place" import or a
-    // transiently-opened file. Deleting a book from Readest must NEVER remove
+    // transiently-opened file. Deleting a book from Moyue must NEVER remove
     // that source file; doing so silently destroyed users' originals.
     if (source.kind === 'managed' && deleteAction !== 'purge') {
       // Purge wipes the whole directory below, so skip the per-file removal.
@@ -43,7 +43,7 @@ export async function deleteBook(
     // managed book file, cover.png, and (the reason for issue #4615)
     // config.json (reading progress, notes, bookmarks) + nav.json that the
     // other delete actions leave behind. In-place books keep their external
-    // source file untouched; this only clears Readest's own sidecar dir.
+    // source file untouched; this only clears Moyue's own sidecar dir.
     if (deleteAction === 'purge') {
       const dir = getDir(book);
       if (await fs.exists(dir, 'Books')) {

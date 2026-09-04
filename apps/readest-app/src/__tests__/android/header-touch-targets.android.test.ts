@@ -90,7 +90,7 @@ const measureHeaderControls = (page: CdpPage) =>
 
 const env = await detectAndroidEnv();
 if (!env) {
-  console.warn('[test:android] no adb device with Readest installed — skipping the Android lane');
+  console.warn('[test:android] no adb device with Moyue installed — skipping the Android lane');
 }
 
 describe.runIf(env)('Android reader header bar touch targets (#5401)', () => {

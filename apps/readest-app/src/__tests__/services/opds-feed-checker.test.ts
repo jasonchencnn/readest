@@ -443,7 +443,7 @@ describe('OPDS feed checker', () => {
 
     // readest issue #5583: a Calibre entry that also carries KFX must not have
     // that picked over the EPUB sitting next to it.
-    it('prefers EPUB over a format Readest cannot import', () => {
+    it('prefers EPUB over a format Moyue cannot import', () => {
       const pub: OPDSPublication = {
         metadata: { id: 'urn:test:kfx-epub', title: 'KFX vs EPUB' },
         links: [
@@ -466,7 +466,7 @@ describe('OPDS feed checker', () => {
 
     // Downloading it would only fail at import, leaving a failed-download entry
     // behind, so the entry is skipped outright.
-    it('skips an entry whose only formats are ones Readest cannot import', () => {
+    it('skips an entry whose only formats are ones Moyue cannot import', () => {
       const pub: OPDSPublication = {
         metadata: { id: 'urn:test:kfx-only', title: 'KFX only' },
         links: [

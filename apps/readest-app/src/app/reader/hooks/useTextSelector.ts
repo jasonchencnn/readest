@@ -121,7 +121,7 @@ export const useTextSelector = (
   // Chromium can (re)show the floating selection ActionMode through paths
   // that never fire a cancelable contextmenu event (handle-drag release,
   // window focus regain, TextClassifier callbacks), so handleContextmenu's
-  // preventDefault alone cannot keep it off Readest's own toolbar. Keep the
+  // preventDefault alone cannot keep it off Moyue's own toolbar. Keep the
   // native gate set exactly while reader text is selected — with no reader
   // selection the flag is off, so system Cut/Copy/Paste menus in editable
   // fields keep working.

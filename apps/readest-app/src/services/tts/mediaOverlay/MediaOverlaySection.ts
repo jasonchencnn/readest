@@ -83,7 +83,7 @@ const blockAncestor = (el: Element): Element => {
 //
 // Not `selectNodeContents(el)`: that puts both boundaries on the element itself,
 // and foliate's getCFI then emits a degenerate range CFI whose start and end
-// paths are identical (`...,/10[id],/10[id]`). Readest's TTS highlighter
+// paths are identical (`...,/10[id],/10[id]`). Moyue's TTS highlighter
 // round-trips every range through a CFI before drawing, so such a range
 // re-anchored to nothing and the highlight silently never painted. foliate's own
 // TTS ranges come from its text walker and are always text-node-based; these

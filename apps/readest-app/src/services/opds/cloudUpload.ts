@@ -11,7 +11,7 @@ import { isSyncCategoryEnabled } from '@/services/sync/syncCategories';
 const UPLOAD_QUEUE_DELAY_MS = 3000;
 
 /**
- * Queue Readest Cloud uploads for OPDS-imported books — the manual catalog
+ * Queue Moyue Cloud uploads for OPDS-imported books — the manual catalog
  * download and the subscription auto-sync share this policy. Unlike the
  * explicit per-book Upload action, these are automatic uploads, so they honor
  * the Manage Sync "Books" toggle the same way normal library imports do

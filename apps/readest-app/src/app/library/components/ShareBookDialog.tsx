@@ -99,7 +99,7 @@ const ShareBookDialog: React.FC<ShareBookDialogProps> = ({ isOpen, book, cfi, on
     setGenerating(true);
     setErrorMessage(null);
     try {
-      // Upload first if the book isn't in Readest storage, which is what a share
+      // Upload first if the book isn't in Moyue storage, which is what a share
       // link is served from. `uploadedAt` alone doesn't prove that: the file-sync
       // engine also stamps it for a book whose only cloud copy is on the selected
       // third-party provider (WebDAV / Google Drive / …).

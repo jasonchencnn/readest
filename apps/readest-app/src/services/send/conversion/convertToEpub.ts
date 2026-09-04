@@ -54,7 +54,7 @@ export function stableIdentifier(content: string): string {
   for (let i = 0; i < content.length; i++) {
     h = ((h << 5) + h + content.charCodeAt(i)) >>> 0;
   }
-  return `readest:${h.toString(16)}`;
+  return `moyue:${h.toString(16)}`;
 }
 
 export function stripTags(html: string): string {
@@ -601,7 +601,7 @@ export async function convertPageToEpub(html: string, url: string): Promise<Conv
 }
 
 /**
- * Convert a document Readest cannot open natively into an EPUB. Runs entirely
+ * Convert a document Moyue cannot open natively into an EPUB. Runs entirely
  * client-side (browser or Tauri webview) — meant to be called inside a Web
  * Worker so the heavy parsing never blocks the UI thread.
  */

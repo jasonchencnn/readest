@@ -5,7 +5,7 @@ import { resolve } from 'path';
 /**
  * Regression guard: saving an image to Photos killed the app on iOS (#5397).
  *
- * Readest writes to the photo library through paths it does not own: WebKit's
+ * Moyue writes to the photo library through paths it does not own: WebKit's
  * native long-press image callout ("Add to Photos") and the `Save Image`
  * activity of the share sheet the image viewer opens. Both run in-process and
  * hit `PHPhotoLibrary.performChanges`, so TCC terminates the app with

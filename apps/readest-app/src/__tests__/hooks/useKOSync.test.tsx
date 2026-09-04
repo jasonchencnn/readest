@@ -223,7 +223,7 @@ describe('useKOSync — applying a newer remote position (#5065)', () => {
 describe('useKOSync — no clobbering when the pull is unresolved (#5065)', () => {
   test('does NOT auto-push (PUT) when an XPointer pull cannot be resolved, even if percentages match', async () => {
     // iOS: the XPointer can't be converted to a local CFI, and KOReader's
-    // reported percentage coincidentally equals Readest's. Pre-fix this looked
+    // reported percentage coincidentally equals Moyue's. Pre-fix this looked
     // like "no conflict" → synced → auto-push overwrote the remote position.
     h.cfiResolves = false;
     const { rerender } = renderHook(() => useKOSync('h1-view1'));
