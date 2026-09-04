@@ -26,10 +26,10 @@ local API_CALL_DEBOUNCE_DELAY = 30
 -- interactive first and rapid book switching coalesces to a single pull for
 -- the book you settle on, instead of stacking blocking round-trips (#5006).
 local READER_READY_PULL_DELAY = 1
-local SUPABAE_ANON_KEY_BASE64 = "ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKemRYQmhZbUZ6WlNJc0luSmxaaUk2SW5aaWMzbDRablZ6YW1weFpIaHJhbkZzZVhOaklpd2ljbTlzWlNJNkltRnViMjRpTENKcFlYUWlPakUzTXpReE1qTTJOekVzSW1WNGNDSTZNakEwT1RZNU9UWTNNWDAuM1U1VXFhb3VfMVNnclZlMWVvOXJBcGMwdUtqcWhwUWRVWGh2d1VIbVVmZw=="
+local SUPABAE_ANON_KEY_BASE64 = "ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnliMnhsSWpvaVlXNXZiaUo5LkVyeFZ5ZUNlTjJrY25pdzNjOTlmc0NDcnJwc1YzZktXN3ZjRDl5QjlvRDA="
 
 ReadestSync.default_settings = {
-    supabase_url = "https://readest.supabase.co",
+    supabase_url = "https://readest-api.chen-cn.top",
     supabase_anon_key = sha2.base64_to_bin(SUPABAE_ANON_KEY_BASE64),
     auto_sync = false,
     user_email = nil,

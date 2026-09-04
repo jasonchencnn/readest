@@ -8,13 +8,15 @@ local _ = require("readest_i18n")
 
 local SelfUpdate = {}
 
+-- Self-hosted (ReadestCN) build: the plugin is pre-configured against a
+-- private Supabase backend, so official release feeds are disabled to keep
+-- an auto-update from replacing the baked-in defaults. These endpoints 404
+-- by design, making update checks fail gracefully.
 local UPDATE_URLS = {
-    "https://download.readest.com/releases/latest.json",
-    "https://github.com/readest/readest/releases/latest/download/latest.json",
+    "https://readest-api.chen-cn.top/koplugin-updates/disabled-latest.json",
 }
 local DOWNLOAD_URLS = {
-    "https://download.readest.com/releases/%s/Readest-%s-1.koplugin.zip",
-    "https://github.com/readest/readest/releases/download/%s/Readest-%s-1.koplugin.zip",
+    "https://readest-api.chen-cn.top/koplugin-updates/Readest-%s-1.koplugin.zip",
 }
 
 function SelfUpdate:compareVersions(v1, v2)

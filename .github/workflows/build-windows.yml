@@ -1,0 +1,49 @@
+name: Build ReadestCN (Windows)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: apps/readest-app/src-tauri
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Setup vendors
+        run: pnpm --filter @readest/readest-app setup-vendors
+
+      - name: Build Windows bundles (msi + nsis)
+        run: pnpm tauri build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ReadestCN-windows-x64
+          path: |
+            target/release/bundle/msi/*.msi
+            target/release/bundle/nsis/*.exe
+          if-no-files-found: error
