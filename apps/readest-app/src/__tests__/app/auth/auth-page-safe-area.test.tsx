@@ -6,6 +6,7 @@ import AuthPage from '@/app/auth/page';
 vi.mock('@/services/environment', () => ({
   isTauriAppPlatform: () => true,
   getBaseUrl: () => 'https://web.readest.com',
+  getAPIBaseUrl: () => 'https://web.readest.com/api',
 }));
 
 vi.mock('@/context/AuthContext', () => ({

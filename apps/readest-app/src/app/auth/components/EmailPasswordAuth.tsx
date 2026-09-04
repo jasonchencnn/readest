@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useTranslation } from '@/hooks/useTranslation';
+import { getAPIBaseUrl } from '@/services/environment';
 
 type AuthView = 'sign_in' | 'sign_up' | 'magic_link' | 'forgotten_password';
 
@@ -79,6 +80,41 @@ export default function EmailPasswordAuth({
     setView(next);
   };
 
+  // Signup is invite-only: the server validates the code, mints the account
+  // via the GoTrue admin API (DISABLE_SIGNUP keeps the anon path closed),
+  // then we sign in with the credentials the user just chose.
+  const signUpWithInvite = async (email: string, password: string, inviteCode: string) => {
+    const response = await fetch(`${getAPIBaseUrl()}/auth/invite/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, inviteCode }),
+    });
+    const data = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      message?: string;
+    };
+    if (!response.ok) {
+      setError(signupErrorToMessage(data));
+      return false;
+    }
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) setError(error.message);
+    return !error;
+  };
+
+  const signupErrorToMessage = (data: { error?: string; message?: string }) => {
+    switch (data.error) {
+      case 'invalid_or_exhausted':
+        return _('Invalid or expired invitation code');
+      case 'email_exists':
+        return _('An account with this email already exists');
+      case 'invalid_request':
+        return _('Please enter a valid email, password, and invitation code');
+      default:
+        return data.message || _('Sign up failed. Please try again later');
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     // Read credentials from the form's DOM state: Android/iOS password
@@ -94,16 +130,9 @@ export default function EmailPasswordAuth({
         const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) setError(error.message);
       } else if (view === 'sign_up') {
-        const {
-          data: { user, session },
-          error,
-        } = await supabaseClient.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: redirectTo },
-        });
-        if (error) setError(error.message);
-        else if (user && !session) setMessage(_('Check your email for the confirmation link'));
+        const inviteCode = String(formData.get('inviteCode') || '').trim();
+        const ok = await signUpWithInvite(email, password, inviteCode);
+        if (ok) setMessage(_('Welcome! Your account has been created'));
       } else if (view === 'magic_link') {
         const { error } = await supabaseClient.auth.signInWithOtp({
           email,
@@ -169,6 +198,26 @@ export default function EmailPasswordAuth({
             required
             placeholder={_('Your password')}
             autoComplete={view === 'sign_in' ? 'current-password' : 'new-password'}
+            className='input input-bordered eink-bordered w-full rounded-lg placeholder:text-sm'
+            disabled={loading}
+            onFocus={keepAboveKeyboard}
+          />
+        </div>
+      )}
+      {view === 'sign_up' && (
+        <div className='form-control'>
+          <label className='label' htmlFor='inviteCode'>
+            <span className='label-text'>{_('Invitation code')}</span>
+          </label>
+          <input
+            id='inviteCode'
+            name='inviteCode'
+            type='text'
+            required
+            placeholder={_('Enter your invitation code')}
+            autoComplete='off'
+            autoCapitalize='characters'
+            spellCheck={false}
             className='input input-bordered eink-bordered w-full rounded-lg placeholder:text-sm'
             disabled={loading}
             onFocus={keepAboveKeyboard}

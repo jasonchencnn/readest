@@ -8,6 +8,10 @@ vi.mock('@/hooks/useTranslation', () => ({
   useTranslation: () => (key: string) => key,
 }));
 
+vi.mock('@/services/environment', () => ({
+  getAPIBaseUrl: () => 'https://web.readest.com/api',
+}));
+
 const createSupabaseMock = () => {
   const auth = {
     signInWithPassword: vi.fn().mockResolvedValue({ error: null }),
@@ -66,8 +70,14 @@ describe('EmailPasswordAuth autofill (#5499)', () => {
     expect(password.type).toBe('password');
   });
 
-  it('signs up with autofilled credentials and a new-password hint', async () => {
+  it('signs up through the invite endpoint, then signs in with the new credentials', async () => {
     const { client, auth } = createSupabaseMock();
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({ ok: true }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
     const { container, getByText } = render(
       <EmailPasswordAuth
         supabaseClient={client}
@@ -79,19 +89,34 @@ describe('EmailPasswordAuth autofill (#5499)', () => {
 
     const email = container.querySelector('input[name="email"]') as HTMLInputElement;
     const password = container.querySelector('input[name="password"]') as HTMLInputElement;
+    const inviteCode = container.querySelector('input[name="inviteCode"]') as HTMLInputElement;
     expect(password.getAttribute('autocomplete')).toBe('new-password');
+    expect(inviteCode).toBeTruthy();
 
     autofill(email, 'new@example.com');
     autofill(password, 'freshpassw0rd');
+    autofill(inviteCode, 'abcd-efgh-jkmn');
     fireEvent.submit(container.querySelector('form') as HTMLFormElement);
 
     await waitFor(() => {
-      expect(auth.signUp).toHaveBeenCalledWith({
+      expect(fetchMock).toHaveBeenCalledWith(
+        'https://web.readest.com/api/auth/invite/signup',
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({
+            email: 'new@example.com',
+            password: 'freshpassw0rd',
+            inviteCode: 'abcd-efgh-jkmn',
+          }),
+        }),
+      );
+      expect(auth.signInWithPassword).toHaveBeenCalledWith({
         email: 'new@example.com',
         password: 'freshpassw0rd',
-        options: { emailRedirectTo: 'https://web.readest.com/auth/callback' },
       });
+      expect(auth.signUp).not.toHaveBeenCalled();
     });
+    vi.unstubAllGlobals();
   });
 
   it('sends a magic link and a reset email with the FormData email', async () => {
