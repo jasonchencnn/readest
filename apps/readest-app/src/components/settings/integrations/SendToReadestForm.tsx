@@ -7,7 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { fetchWithAuth } from '@/utils/fetch';
 import { getAPIBaseUrl } from '@/services/environment';
 import { isInboxDrainEnabled, setInboxDrainEnabled } from '@/services/send/devicePrefs';
-import { getAccessToken, getUserProfilePlan, isEmailInPlan } from '@/utils/access';
+import { getAccessToken, isEmailInPlan } from '@/utils/access';
 import { navigateToLogin, navigateToProfile } from '@/utils/nav';
 import { eventDispatcher } from '@/utils/event';
 import type { UserPlan } from '@/types/quota';
@@ -70,8 +70,24 @@ const SendToReadestForm: React.FC<SendToReadestFormProps> = ({ onBack }) => {
     try {
       // Resolve the user's plan first — free users get the upgrade card and
       // we skip the address / senders calls entirely (they'd 403 anyway).
+      // Self-hosted GoTrue has no `plan` JWT claim, so we must ask the
+      // server (membership lives in the `plans` table). Mirror the
+      // `/api/user/plan` fetch used by useQuotaStats.
       const token = await getAccessToken();
-      const plan: UserPlan = token ? getUserProfilePlan(token) : 'free';
+      let plan: UserPlan = 'free';
+      if (token) {
+        try {
+          const res = await fetch(`${apiBase}/user/plan`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (res.ok) {
+            const data = (await res.json()) as { plan: UserPlan };
+            plan = data.plan;
+          }
+        } catch {
+          // network failure → fall back to 'free' (matches old JWT default)
+        }
+      }
       setUserPlan(plan);
       if (!isEmailInPlan(plan)) {
         setLoading(false);

@@ -2,7 +2,7 @@ import { getAPIBaseUrl } from '@/services/environment';
 import { stubTranslation as _ } from '@/utils/misc';
 import { ErrorCodes, TranslationProvider } from '../types';
 import { UserPlan } from '@/types/quota';
-import { getSubscriptionPlan, getTranslationQuota } from '@/utils/access';
+import { getTranslationQuota } from '@/utils/access';
 import { normalizeToShortLang } from '@/utils/lang';
 import { saveDailyUsage } from '../utils';
 
@@ -38,8 +38,22 @@ export const deeplProvider: TranslationProvider = {
 
     let userPlan: UserPlan = 'free';
     if (token) {
-      userPlan = getSubscriptionPlan(token);
       headers['Authorization'] = `Bearer ${token}`;
+      // Self-hosted GoTrue has no `plan` JWT claim, so resolve the
+      // user's membership from the server (the `plans` table). Falls
+      // back to 'free' on any failure so paid users see a transient
+      // free-tier quota rather than an unhandled error mid-translation.
+      try {
+        const res = await fetch(`${getAPIBaseUrl()}/user/plan`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = (await res.json()) as { plan: UserPlan };
+          userPlan = data.plan;
+        }
+      } catch {
+        // network failure → keep 'free' (matches old JWT default)
+      }
     }
 
     if (authRequired && !token) {
