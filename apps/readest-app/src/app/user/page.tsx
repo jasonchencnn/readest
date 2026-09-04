@@ -14,7 +14,9 @@ import { useAvailablePlans } from '@/hooks/useAvailablePlans';
 import type { PlanType } from '@/types/quota';
 import { navigateToLibrary } from '@/utils/nav';
 import { eventDispatcher } from '@/utils/event';
-import { isTauriAppPlatform } from '@/services/environment';
+import { getAPIBaseUrl, isTauriAppPlatform } from '@/services/environment';
+import { getRuntimeConfig } from '@/services/runtimeConfig';
+import { MEMBERSHIP_PLANS } from '@/services/constants';
 import { getPlanDetails } from './utils/plan';
 import { Toast } from '@/components/Toast';
 import {
@@ -53,6 +55,11 @@ type CheckoutState = {
   planName: string;
 };
 
+type EpayCheckout = {
+  productId: string;
+  planName: string;
+};
+
 const ProfilePage = () => {
   const _ = useTranslation();
   const router = useRouter();
@@ -73,6 +80,7 @@ const ProfilePage = () => {
     sessionId: '',
     planName: '',
   });
+  const [epayCheckout, setEpayCheckout] = useState<EpayCheckout | null>(null);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -91,6 +99,68 @@ const ProfilePage = () => {
   }, [mounted, user, token, appService, router]);
 
   useTheme({ systemUIVisible: false });
+
+  // Returning from the payment gateway (?payment=success&orderNo=…): poll the
+  // order until the async notify has flipped it to paid, then reload so
+  // useQuotaStats picks up the new tier. Web-only UX — desktop/mobile users
+  // come back to a fresh /user load anyway.
+  useEffect(() => {
+    if (!mounted || !token) return;
+    const payment = searchParams?.get('payment');
+    const orderNo = searchParams?.get('orderNo');
+    if (payment === 'failed') {
+      eventDispatcher.dispatch('toast', {
+        type: 'warning',
+        message: _('Payment not completed. Please try again.'),
+      });
+      return;
+    }
+    if (payment !== 'success' || !orderNo) return;
+
+    let cancelled = false;
+    const pollOrder = async () => {
+      for (let attempt = 0; attempt < 10 && !cancelled; attempt++) {
+        try {
+          const res = await fetch(
+            `${getAPIBaseUrl()}/pay/query?orderNo=${encodeURIComponent(orderNo)}`,
+            { headers: { Authorization: `Bearer ${token}` } },
+          );
+          if (res.ok) {
+            const { order } = (await res.json()) as { order?: { status?: string } };
+            if (order?.status === 'paid') {
+              if (!cancelled) {
+                eventDispatcher.dispatch('toast', {
+                  type: 'success',
+                  message: _('Payment successful! Your membership is now active.'),
+                });
+                window.location.reload();
+              }
+              return;
+            }
+          }
+        } catch {
+          // keep polling
+        }
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      }
+      if (!cancelled) {
+        eventDispatcher.dispatch('toast', {
+          type: 'info',
+          message: _('Payment is being confirmed. Please refresh in a moment.'),
+        });
+      }
+    };
+    pollOrder();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mounted, token]);
+
+  // Read at render time (client): the runtime-config script lands before
+  // hydration; during SSR this resolves to undefined → stripe path, which
+  // never matters since subscribe handlers only fire on user clicks.
+  const isEpayProvider = getRuntimeConfig()?.paymentProvider === 'epay';
 
   const { quotas, userProfilePlan = 'free' } = useQuotaStats();
   const {
@@ -238,7 +308,59 @@ const ProfilePage = () => {
     setLoading(false);
   };
 
+  const handleEpaySubscribe = (productId?: string) => {
+    if (!productId) return;
+    const membership = MEMBERSHIP_PLANS.find((p) => p.productId === productId);
+    if (!membership) return;
+    setEpayCheckout({ productId, planName: membership.productName });
+  };
+
+  const handleEpayPay = async (channel: 'wechat' | 'alipay') => {
+    if (!epayCheckout || !token) return;
+    const membership = MEMBERSHIP_PLANS.find((p) => p.productId === epayCheckout.productId);
+    if (!membership) return;
+    setLoading(true);
+    try {
+      const response = await fetch(`${getAPIBaseUrl()}/pay/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ plan: membership.plan, channel }),
+      });
+      const data = (await response.json().catch(() => ({}))) as {
+        payUrl?: string;
+        error?: string;
+      };
+      if (!response.ok || !data.payUrl) {
+        throw new Error(data.error || 'Could not create payment');
+      }
+      setEpayCheckout(null);
+      // The gateway page opens outside the app; the async notify credits the
+      // order server-side regardless of how the user gets back.
+      if (isTauriAppPlatform() && !appService?.isMobileApp) {
+        const { openUrl } = await import('@tauri-apps/plugin-opener');
+        await openUrl(data.payUrl);
+      } else {
+        window.location.href = data.payUrl;
+      }
+    } catch (error) {
+      console.error('epay checkout error:', error);
+      eventDispatcher.dispatch('toast', {
+        type: 'error',
+        message: _('Failed to create checkout session'),
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleManageSubscription = async () => {
+    if (isEpayProvider) {
+      eventDispatcher.dispatch('toast', {
+        type: 'info',
+        message: _('For subscription management, please contact the administrator.'),
+      });
+      return;
+    }
     setLoading(true);
     try {
       const url = await createStripePortalSession();
@@ -365,7 +487,9 @@ const ProfilePage = () => {
                         onSubscribe={
                           appService.hasIAP && iapAvailable
                             ? handleIAPSubscribe
-                            : handleStripeSubscribe
+                            : isEpayProvider
+                              ? handleEpaySubscribe
+                              : handleStripeSubscribe
                         }
                       />
                     </div>
@@ -393,6 +517,43 @@ const ProfilePage = () => {
             </div>
           )}
         </div>
+        {epayCheckout && (
+          <div
+            className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-6'
+            onClick={() => setEpayCheckout(null)}
+          >
+            <div
+              className='bg-base-100 w-full max-w-xs rounded-lg p-6 shadow-xl'
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className='mb-1 text-center text-lg font-semibold'>
+                {_('Choose a payment method')}
+              </h3>
+              <p className='text-base-content/70 mb-5 text-center text-sm'>
+                {epayCheckout.planName} · {_('per month')}
+              </p>
+              <div className='flex flex-col gap-3'>
+                <button
+                  className='btn btn-primary w-full rounded-lg'
+                  disabled={loading}
+                  onClick={() => handleEpayPay('wechat')}
+                >
+                  {_('WeChat Pay')}
+                </button>
+                <button
+                  className='btn w-full rounded-lg'
+                  disabled={loading}
+                  onClick={() => handleEpayPay('alipay')}
+                >
+                  {_('Alipay')}
+                </button>
+              </div>
+              <button className='btn btn-ghost mt-2 w-full' onClick={() => setEpayCheckout(null)}>
+                {_('Cancel')}
+              </button>
+            </div>
+          </div>
+        )}
         <Toast />
       </div>
     </div>

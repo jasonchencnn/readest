@@ -6,6 +6,7 @@ export interface ReadestRuntimeConfig {
   storageFixedQuota?: number;
   translationFixedQuota?: number;
   fontBaseUrl?: string;
+  paymentProvider?: string;
 }
 
 declare global {
@@ -44,10 +45,15 @@ export const getServerRuntimeConfig = (): ReadestRuntimeConfig => ({
     return raw ? parseInt(raw, 10) : undefined;
   })(),
   // Base URL of the directory holding the self-hosted CJK webfont bundles.
-  // Readest's own CDN only answers CORS for readest.com origins, so a
+  // Moyue's own CDN only answers CORS for readest.com origins, so a
   // self-hosted deployment on a custom domain has to serve them itself (#5550).
   // `||` not `??`: compose passes the variable through even when it is unset,
   // and an empty string would build root-relative font URLs.
   fontBaseUrl:
     process.env['FONT_BASE_URL'] || process.env['NEXT_PUBLIC_FONT_BASE_URL'] || undefined,
+  // Membership checkout provider for the client UI: "epay" (Moyue CN, WeChat/
+  // Alipay via the aggregated gateway) or "stripe" (upstream). Runtime env —
+  // NOT a NEXT_PUBLIC build arg — so the published image can switch providers
+  // without rebuilding.
+  paymentProvider: process.env['PAYMENT_PROVIDER'] ?? process.env['NEXT_PUBLIC_PAYMENT_PROVIDER'],
 });

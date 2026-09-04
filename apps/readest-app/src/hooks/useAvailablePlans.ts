@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { fetchAndTransformIAPPlans, isIAPAvailable } from '@/libs/payment/iap/client';
 import { fetchStripePlans } from '@/libs/payment/stripe/client';
+import { MEMBERSHIP_PLANS } from '@/services/constants';
+import { getRuntimeConfig } from '@/services/runtimeConfig';
 import { AvailablePlan } from '@/types/quota';
 import { stubTranslation as _ } from '@/utils/misc';
 
@@ -25,6 +27,16 @@ export const useAvailablePlans = ({ hasIAP, onError }: UseAvailablePlansParams) 
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    // Moyue CN build: plans are the compile-time membership tiers, purchased
+    // through the epay gateway — nothing to fetch. Read at effect time (not
+    // module load): the runtime config script lands before hydration, but
+    // never during SSR.
+    if (getRuntimeConfig()?.paymentProvider === 'epay') {
+      setAvailablePlans(MEMBERSHIP_PLANS);
+      setIapAvailable(false);
+      return;
+    }
+
     const fetchPlans = async () => {
       setLoading(true);
       setError(null);
