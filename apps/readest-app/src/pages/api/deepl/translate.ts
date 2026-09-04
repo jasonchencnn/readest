@@ -2,11 +2,9 @@ import crypto from 'crypto';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { corsAllMethods, runMiddleware } from '@/utils/cors';
 import { getCloudflareContext } from '@opennextjs/cloudflare';
-import {
-  getDailyTranslationPlanData,
-  getSubscriptionPlan,
-  validateUserAndToken,
-} from '@/utils/access';
+import { getTranslationQuota, validateUserAndToken } from '@/utils/access';
+import { getUserPlanData } from '@/utils/plan';
+import type { UserPlan } from '@/types/quota';
 import { ErrorCodes } from '@/services/translators';
 import { UsageStatsManager } from '@/utils/usage';
 
@@ -39,8 +37,8 @@ const generateCacheKey = (text: string, sourceLang: string, targetLang: string):
   return `tr:${hash}`;
 };
 
-const checkDailyUsage = async (userId: string, token: string, chars: number) => {
-  const { quota: dailyQuota } = getDailyTranslationPlanData(token);
+const checkDailyUsage = async (userId: string, plan: string, chars: number) => {
+  const dailyQuota = getTranslationQuota(plan as UserPlan);
   const dailyUsage = await UsageStatsManager.getCurrentUsage(userId, 'translation_chars', 'daily');
 
   if (dailyQuota <= dailyUsage + chars) {
@@ -51,19 +49,18 @@ const checkDailyUsage = async (userId: string, token: string, chars: number) => 
 
 const updateDailyUsage = async (
   userId: string | undefined,
-  token: string | undefined,
+  plan: string | undefined,
   incrementUsage: number,
 ) => {
-  if (!userId || !token) return 0;
+  if (!userId || !plan) return 0;
 
   try {
-    const userPlan = getSubscriptionPlan(token);
     const newUsage = await UsageStatsManager.trackUsage(
       userId,
       'translation_chars',
       incrementUsage,
       {
-        plan_type: userPlan,
+        plan_type: plan,
         source: 'deepl_api',
       },
     );
@@ -98,8 +95,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   let deeplApiUrl = deepFreeApiUrl;
   let userPlan = 'free';
-  if (user && token) {
-    userPlan = getSubscriptionPlan(token);
+  if (user) {
+    // Tier resolves server-side from the plans table; the JWT has no claim.
+    userPlan = (await getUserPlanData(user.id)).plan;
     if (userPlan === 'pro') deeplApiUrl = deeplProApiUrl;
   }
   const deeplAuthKey =
@@ -138,7 +136,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         }
 
         if (!user || !token) return res.status(401).json({ error: ErrorCodes.UNAUTHORIZED });
-        await checkDailyUsage(user?.id, token, singleText.length);
+        await checkDailyUsage(user?.id, userPlan, singleText.length);
 
         return await callDeepLAPI(
           singleText,
@@ -155,7 +153,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const translatedCharsCount = translations.reduce((a, b) => a + (b?.text.length || 0), 0);
     const newDailyUsage = await updateDailyUsage(
       user?.id,
-      token,
+      userPlan,
       originalCharsCount + translatedCharsCount,
     );
     translations.forEach((translation) => {

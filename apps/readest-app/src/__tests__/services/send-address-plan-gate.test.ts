@@ -6,18 +6,20 @@ import type { UserPlan } from '@/types/quota';
 // Hoisted mocks — installed before importing the route handler.
 
 const validateUserMock = vi.fn();
-const getUserProfilePlanMock = vi.fn();
+const getUserPlanDataMock = vi.fn();
 vi.mock('@/utils/access', async () => {
   // Reach the real module so `isEmailInPlan` keeps the production logic
-  // (we test it directly below) while patching the two functions the
+  // (we test it directly below) while patching the function the
   // route actually calls.
   const actual = await vi.importActual<typeof import('@/utils/access')>('@/utils/access');
   return {
     ...actual,
     validateUserAndToken: (...args: unknown[]) => validateUserMock(...args),
-    getUserProfilePlan: (...args: unknown[]) => getUserProfilePlanMock(...args),
   };
 });
+vi.mock('@/utils/plan', () => ({
+  getUserPlanData: (...args: unknown[]) => getUserPlanDataMock(...args),
+}));
 
 vi.mock('@/utils/cors', () => ({
   corsAllMethods: vi.fn(),
@@ -88,12 +90,19 @@ function makeReq(method: 'GET' | 'POST', body?: unknown): NextApiRequest {
 
 beforeEach(() => {
   validateUserMock.mockReset();
-  getUserProfilePlanMock.mockReset();
+  getUserPlanDataMock.mockReset();
   supabaseTouched.mockReset();
   validateUserMock.mockResolvedValue({
     user: { id: 'user-1', email: 'u@example.com' },
     token: 'testtoken',
   });
+});
+
+const planData = (plan: UserPlan) => ({
+  plan,
+  usage: 0,
+  quota: 0,
+  currentPeriodEnd: null,
 });
 
 describe('isEmailInPlan helper', () => {
@@ -110,7 +119,7 @@ describe('isEmailInPlan helper', () => {
 
 describe('/api/send/address — plan gate', () => {
   test('returns 403 with code=plan_required for free users on GET (lazy-create blocked)', async () => {
-    getUserProfilePlanMock.mockReturnValue('free' satisfies UserPlan);
+    getUserPlanDataMock.mockResolvedValue(planData('free' satisfies UserPlan));
     const res = makeRes();
     await addressHandler(makeReq('GET'), res as unknown as NextApiResponse);
 
@@ -126,7 +135,7 @@ describe('/api/send/address — plan gate', () => {
   });
 
   test('returns 403 for free users on POST (rotation blocked)', async () => {
-    getUserProfilePlanMock.mockReturnValue('free' satisfies UserPlan);
+    getUserPlanDataMock.mockResolvedValue(planData('free' satisfies UserPlan));
     const res = makeRes();
     await addressHandler(makeReq('POST', { slug: 'myname' }), res as unknown as NextApiResponse);
 
@@ -140,7 +149,7 @@ describe('/api/send/address — plan gate', () => {
     'pro',
     'purchase',
   ])('lets %s users through the gate', async (plan) => {
-    getUserProfilePlanMock.mockReturnValue(plan);
+    getUserPlanDataMock.mockResolvedValue(planData(plan));
     const res = makeRes();
     await addressHandler(makeReq('GET'), res as unknown as NextApiResponse);
     // The gate is past — Supabase was touched. We don't care here what
@@ -152,7 +161,7 @@ describe('/api/send/address — plan gate', () => {
 
 describe('/api/send/senders — plan gate', () => {
   test('returns 403 for free users on GET (list blocked)', async () => {
-    getUserProfilePlanMock.mockReturnValue('free' satisfies UserPlan);
+    getUserPlanDataMock.mockResolvedValue(planData('free' satisfies UserPlan));
     const res = makeRes();
     await sendersHandler(makeReq('GET'), res as unknown as NextApiResponse);
 
@@ -162,7 +171,7 @@ describe('/api/send/senders — plan gate', () => {
   });
 
   test('returns 403 for free users on POST (add sender blocked)', async () => {
-    getUserProfilePlanMock.mockReturnValue('free' satisfies UserPlan);
+    getUserPlanDataMock.mockResolvedValue(planData('free' satisfies UserPlan));
     const res = makeRes();
     await sendersHandler(
       makeReq('POST', { email: 'friend@example.com' }),
@@ -175,7 +184,7 @@ describe('/api/send/senders — plan gate', () => {
   });
 
   test.each<UserPlan>(['plus', 'pro', 'purchase'])('lets %s users past the gate', async (plan) => {
-    getUserProfilePlanMock.mockReturnValue(plan);
+    getUserPlanDataMock.mockResolvedValue(planData(plan));
     const res = makeRes();
     await sendersHandler(makeReq('GET'), res as unknown as NextApiResponse);
     expect(supabaseTouched).toHaveBeenCalled();

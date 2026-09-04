@@ -1,11 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseAdminClient } from '@/utils/supabase';
 import { copyObject, objectExists } from '@/utils/object';
-import {
-  STORAGE_QUOTA_GRACE_BYTES,
-  getStoragePlanData,
-  validateUserAndToken,
-} from '@/utils/access';
+import { STORAGE_QUOTA_GRACE_BYTES, validateUserAndToken } from '@/utils/access';
+import { getUserPlanData } from '@/utils/plan';
 import { rejectionToHttp, resolveActiveShare } from '@/libs/shareServer';
 
 interface RouteParams {
@@ -113,9 +110,10 @@ export async function POST(request: Request, { params }: RouteParams) {
     });
   }
 
-  // Quota check before doing any byte-copy work. JWT-based but consistent
-  // with how the existing upload endpoint enforces it.
-  const { usage, quota } = getStoragePlanData(jwt);
+  // Quota check before doing any byte-copy work. Tier + usage are resolved
+  // server-side from the plans/files tables — consistent with how the
+  // upload endpoint enforces it.
+  const { usage, quota } = await getUserPlanData(user.id);
   if (usage + share.bookSize > quota + STORAGE_QUOTA_GRACE_BYTES) {
     return NextResponse.json(
       { error: 'Insufficient storage quota', code: 'quota_exceeded', usage, quota },
@@ -125,7 +123,7 @@ export async function POST(request: Request, { params }: RouteParams) {
 
   // Translate the sharer's file_keys into the recipient's namespace by
   // swapping the leading user-id prefix. Existing convention: file_key looks
-  // like `${userId}/Readest/Book/{hash}/{filename}`.
+  // like `${userId}/Moyue/Book/{hash}/{filename}`.
   const sharerPrefix = `${share.userId}/`;
   const recipientPrefix = `${user.id}/`;
 

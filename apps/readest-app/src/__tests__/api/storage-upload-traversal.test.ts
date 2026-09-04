@@ -19,6 +19,11 @@ vi.mock('@/utils/access', () => ({
   getStoragePlanData: vi.fn().mockReturnValue({ usage: 0, quota: 10 ** 12 }),
   STORAGE_QUOTA_GRACE_BYTES: 0,
 }));
+vi.mock('@/utils/plan', () => ({
+  getUserPlanData: vi
+    .fn()
+    .mockResolvedValue({ plan: 'free', usage: 0, quota: 10 ** 12, currentPeriodEnd: null }),
+}));
 vi.mock('@/utils/object', async (orig) => {
   const actual = await orig<typeof import('@/utils/object')>();
   return {
@@ -69,7 +74,7 @@ beforeEach(() => {
 describe('POST /api/storage/upload — fileName traversal guard', () => {
   it('rejects a traversing fileName with 400 and never presigns', async () => {
     const { req, res } = makeReqRes({
-      fileName: '../victim-id/Readest/Book/hash/book.epub',
+      fileName: '../victim-id/Moyue/Book/hash/book.epub',
       fileSize: 12345,
     });
     await handler(req, res);
@@ -90,7 +95,7 @@ describe('POST /api/storage/upload — fileName traversal guard', () => {
 
   it('allows a normal book key through to presigning', async () => {
     const { req, res } = makeReqRes({
-      fileName: 'Readest/Books/hash.epub',
+      fileName: 'Moyue/Books/hash.epub',
       fileSize: 12345,
     });
     await handler(req, res);

@@ -1,11 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createSupabaseAdminClient } from '@/utils/supabase';
 import { corsAllMethods, runMiddleware } from '@/utils/cors';
-import {
-  getStoragePlanData,
-  validateUserAndToken,
-  STORAGE_QUOTA_GRACE_BYTES,
-} from '@/utils/access';
+import { validateUserAndToken, STORAGE_QUOTA_GRACE_BYTES } from '@/utils/access';
+import { getUserPlanData } from '@/utils/plan';
 import { getDownloadSignedUrl, getUploadSignedUrl, isSafeObjectKeyName } from '@/utils/object';
 import {
   READEST_PUBLIC_ASSETS_BASE_URL,
@@ -90,7 +87,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Missing file info' });
     }
 
-    const { usage, quota } = getStoragePlanData(token);
+    // Tier quota is resolved server-side from the plans table — the client
+    // token carries no plan claim, so this is the single enforcement point.
+    const { usage, quota } = await getUserPlanData(user.id);
     if (usage + fileSize > quota + STORAGE_QUOTA_GRACE_BYTES) {
       return res.status(403).json({ error: 'Insufficient storage quota', usage });
     }

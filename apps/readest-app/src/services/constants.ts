@@ -32,7 +32,12 @@ import {
   OneDriveSettings,
   ICloudSettings,
 } from '@/types/settings';
-import { UserStorageQuota, UserDailyTranslationQuota } from '@/types/quota';
+import {
+  AvailablePlan,
+  PlanInterval,
+  UserStorageQuota,
+  UserDailyTranslationQuota,
+} from '@/types/quota';
 import { getDefaultMaxBlockSize, getDefaultMaxInlineSize } from '@/utils/config';
 import { stubTranslation as _ } from '@/utils/misc';
 import { DEFAULT_AI_SETTINGS } from './ai/constants';
@@ -905,13 +910,16 @@ export const SHARE_TOKEN_LENGTH = 22;
 export const SHARE_PRESIGN_TTL_SECONDS = 300;
 export const SHARE_CFI_MAX_LENGTH = 512;
 
-const LATEST_DOWNLOAD_BASE_URL = 'https://download.readest.com/releases';
+// ReadestCN (self-maintained) build: the official release hosts are
+// deliberately unreachable from this app. These URLs only ever 404; the
+// updater helper also short-circuits before making any request.
+const LATEST_DOWNLOAD_BASE_URL = 'https://readest.chen-cn.top/releases';
 
 export const READEST_UPDATER_FILE = `${LATEST_DOWNLOAD_BASE_URL}/latest.json`;
 
 export const READEST_CHANGELOG_FILE = `${LATEST_DOWNLOAD_BASE_URL}/release-notes.json`;
 
-export const READEST_NIGHTLY_UPDATER_FILE = 'https://download.readest.com/nightly/latest.json';
+export const READEST_NIGHTLY_UPDATER_FILE = 'https://readest.chen-cn.top/nightly/latest.json';
 
 // Public (verification) key, identical to src-tauri/tauri.conf.json `updater.pubkey`.
 // Used to verify nightly artifacts in the custom install flows (portable /
@@ -924,7 +932,7 @@ export const READEST_PUBLIC_STORAGE_BASE_URL = 'https://storage.readest.com';
 // (e.g. published book covers) are linked through this host.
 export const READEST_PUBLIC_ASSETS_BASE_URL = 'https://assets.readest.com';
 
-export const READEST_OPDS_USER_AGENT = 'Readest/1.0 (OPDS Browser)';
+export const READEST_OPDS_USER_AGENT = 'Moyue/1.0 (OPDS Browser)';
 
 export const SYNC_PROGRESS_INTERVAL_SEC = 3;
 export const SYNC_NOTES_INTERVAL_SEC = 5;
@@ -948,11 +956,35 @@ export const AUTO_SCROLL_SPEED_STEP = 25;
 export const SHOW_UNREAD_STATUS_BADGE = false;
 
 export const DEFAULT_STORAGE_QUOTA: UserStorageQuota = {
-  free: 500 * 1024 * 1024,
-  plus: 5 * 1024 * 1024 * 1024,
-  pro: 20 * 1024 * 1024 * 1024,
+  free: 100 * 1024 * 1024,
+  plus: 2 * 1024 * 1024 * 1024,
+  pro: 5 * 1024 * 1024 * 1024,
   purchase: 0,
 };
+
+// Moyue membership tiers — monthly subscription, paid via epay (WeChat Pay /
+// Alipay). `amountCents` is the per-month price in CNY cents; storage matches
+// DEFAULT_STORAGE_QUOTA and is enforced server-side (utils/plan.ts).
+export const MEMBERSHIP_INTERVAL: PlanInterval = 'month';
+
+export const MEMBERSHIP_PLANS: AvailablePlan[] = [
+  {
+    plan: 'plus',
+    productId: 'moyue.plus.monthly',
+    price: 1500,
+    currency: 'CNY',
+    interval: MEMBERSHIP_INTERVAL,
+    productName: 'Plus 会员',
+  },
+  {
+    plan: 'pro',
+    productId: 'moyue.pro.monthly',
+    price: 3000,
+    currency: 'CNY',
+    interval: MEMBERSHIP_INTERVAL,
+    productName: 'Pro 会员',
+  },
+];
 
 export const DEFAULT_DAILY_TRANSLATION_QUOTA: UserDailyTranslationQuota = {
   free: 10 * 1024,

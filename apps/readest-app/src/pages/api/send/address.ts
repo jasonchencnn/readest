@@ -1,12 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createSupabaseAdminClient } from '@/utils/supabase';
 import { corsAllMethods, runMiddleware } from '@/utils/cors';
-import {
-  EMAIL_IN_PLANS,
-  getUserProfilePlan,
-  isEmailInPlan,
-  validateUserAndToken,
-} from '@/utils/access';
+import { EMAIL_IN_PLANS, isEmailInPlan, validateUserAndToken } from '@/utils/access';
+import { getUserPlanData } from '@/utils/plan';
 import {
   generateSendAddress,
   buildSendAddress,
@@ -39,8 +35,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Email-in is a paid feature. The client renders a friendly upgrade
   // card on receiving this response, so the structured body (code +
-  // requiredPlans) matters — UI keys off it.
-  const plan = getUserProfilePlan(token);
+  // requiredPlans) matters — UI keys off it. Tier resolves server-side
+  // from the plans table.
+  const plan = (await getUserPlanData(user.id)).plan;
   if (!isEmailInPlan(plan)) {
     return res.status(403).json({
       error: 'Email-in is available on the Plus, Pro, and Lifetime plans',

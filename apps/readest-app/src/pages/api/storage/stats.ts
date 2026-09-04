@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createSupabaseAdminClient } from '@/utils/supabase';
 import { corsAllMethods, runMiddleware } from '@/utils/cors';
-import { validateUserAndToken, getStoragePlanData } from '@/utils/access';
+import { validateUserAndToken } from '@/utils/access';
+import { getUserPlanData } from '@/utils/plan';
 
 interface StorageStats {
   totalFiles: number;
@@ -62,8 +63,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const totalFiles = allFileStats.length;
     const totalSize = allFileStats.reduce((sum, file) => sum + (file.file_size || 0), 0);
 
-    // Get storage plan data
-    const { usage, quota } = getStoragePlanData(token);
+    // Plan tier comes from the plans table (server-side, no JWT claim);
+    // usage is the DB-computed totalSize — the source of truth.
+    const { quota } = await getUserPlanData(user.id);
+    const usage = totalSize;
     const usagePercentage = quota > 0 ? Math.round((usage / quota) * 100) : 0;
 
     // Get stats grouped by book_hash
