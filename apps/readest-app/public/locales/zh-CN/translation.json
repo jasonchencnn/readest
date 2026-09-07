@@ -2060,5 +2060,16 @@
   "Payment successful! Your membership is now active.": "支付成功！会员已生效。",
   "Payment is being confirmed. Please refresh in a moment.": "支付确认中，请稍后刷新。",
   "Payment not completed. Please try again.": "支付未完成，请重试。",
-  "For subscription management, please contact the administrator.": "会员管理请联系管理员。"
+  "For subscription management, please contact the administrator.": "会员管理请联系管理员。",
+  "Redeem a membership code": "兑换会员码",
+  "Enter the code you received from the seller to activate or extend your membership.": "请输入您从卖家获取的兑换码，立即激活或延长会员。",
+  "Redemption code": "兑换码",
+  "Redeem": "兑换",
+  "Redeeming": "兑换中",
+  "Codes are case- and dash-insensitive. Successful redemption extends your current period.": "兑换码不区分大小写和连字符。兑换成功后会在当前会员时长基础上叠加。",
+  "Redemption code is invalid.": "兑换码无效",
+  "Redemption code has expired.": "兑换码已过期",
+  "Redemption code has already been used or is no longer valid.": "兑换码已被使用或失效",
+  "Redemption failed, please try again later.": "兑换失败，请稍后重试",
+  "Redemption success! {{months}} months of {{plan}} activated.": "兑换成功！{{plan}} 已激活 {{months}} 个月。"
 }
