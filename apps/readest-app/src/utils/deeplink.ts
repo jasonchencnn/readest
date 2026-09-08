@@ -131,3 +131,27 @@ export const parseBookDeepLink = (url: string): { bookHash: string; autoplay?: b
   }
   return null;
 };
+
+/**
+ * Parse a `moyue://redeem/{code}` deep link. Mirrors the web landing
+ * `https://readest.chen-cn.top/redeem?code=…` shape — both end up at
+ * `/user?redeem={code}` so the page only needs to read one query param.
+ * Returns the raw, un-normalised code (trim / Crockford decoding happens
+ * server-side inside `redeem_code` RPC).
+ */
+export const parseRedeemDeepLink = (url: string): { code: string } | null => {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+  if (parsed.protocol !== 'moyue:') return null;
+  // moyue://redeem/{code} — first path segment is in `host`, rest in
+  // `pathname`. Filter empty segments so trailing slashes are fine.
+  const segments = [parsed.host, ...parsed.pathname.split('/')].filter(Boolean);
+  if (segments.length === 2 && segments[0] === 'redeem' && segments[1]) {
+    return { code: segments[1] };
+  }
+  return null;
+};

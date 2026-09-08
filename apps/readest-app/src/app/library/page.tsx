@@ -67,6 +67,7 @@ import { useOpenBookLink } from '@/hooks/useOpenBookLink';
 import { useReadingWidget } from '@/hooks/useReadingWidget';
 import { useOpenShareLink } from '@/hooks/useOpenShareLink';
 import { useClipUrlIngress } from '@/hooks/useClipUrlIngress';
+import { useOpenRedeemLink } from '@/hooks/useOpenRedeemLink';
 import { useKeyDownActions } from '@/hooks/useKeyDownActions';
 import { SelectedFile, useFileSelector } from '@/hooks/useFileSelector';
 import { lockScreenOrientation, selectDirectory, showFilePicker } from '@/utils/bridge';
@@ -373,6 +374,7 @@ const LibraryPageContent = ({ searchParams }: { searchParams: ReadonlyURLSearchP
   useOpenBookLink();
   useReadingWidget();
   useOpenShareLink();
+  useOpenRedeemLink();
   useClipUrlIngress();
   useTransferQueue(libraryLoaded);
 

@@ -2071,5 +2071,7 @@
   "Redemption code has expired.": "兌換碼已過期",
   "Redemption code has already been used or is no longer valid.": "兌換碼已被使用或失效",
   "Redemption failed, please try again later.": "兌換失敗，請稍後重試",
-  "Redemption success! {{months}} months of {{plan}} activated.": "兌換成功！{{plan}} 已啟用 {{months}} 個月。"
+  "Redemption success! {{months}} months of {{plan}} activated.": "兌換成功！{{plan}} 已啟用 {{months}} 個月。",
+  "Redirecting…": "正在跳轉…",
+  "Click here if you are not redirected automatically.": "如果沒有自動跳轉，請點這裡。"
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { getAPIBaseUrl } from '@/services/environment';
@@ -15,15 +15,30 @@ import { REDEMPTION_ERROR_CODES, type RedemptionErrorCode } from '@/utils/redemp
 // page-level `useQuotaStats` reload happens implicitly — the caller calls
 // `onRedeemed` so the parent can `refresh()` its state and pick up the new
 // `plan` / `currentPeriodEnd` from /api/user/plan.
+//
+// `initialCode` pre-fills the input when the user lands via a web landing
+// page (`/redeem?code=…`) or a desktop deep link (`moyue://redeem/…`). The
+// input is auto-focused so a tap on Enter submits without a second click.
 type Props = {
+  initialCode?: string;
   onRedeemed?: () => void;
 };
 
-const RedemptionCard: React.FC<Props> = ({ onRedeemed }) => {
+const RedemptionCard: React.FC<Props> = ({ initialCode, onRedeemed }) => {
   const _ = useTranslation();
   const { token } = useAuth();
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState(initialCode ?? '');
   const [submitting, setSubmitting] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // When the page receives `?redeem=…` (web landing or desktop deep link),
+  // focus the input so the user just hits Enter. No-op on /user visits
+  // without the query string.
+  useEffect(() => {
+    if (initialCode) {
+      inputRef.current?.focus();
+    }
+  }, [initialCode]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -93,6 +108,7 @@ const RedemptionCard: React.FC<Props> = ({ onRedeemed }) => {
       </p>
       <form onSubmit={handleSubmit} className='flex flex-col gap-3 sm:flex-row sm:items-stretch'>
         <input
+          ref={inputRef}
           type='text'
           value={code}
           onChange={(e) => setCode(e.target.value)}

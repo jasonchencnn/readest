@@ -154,6 +154,10 @@ export function useClipUrlIngress() {
     if (!isTauriAppPlatform() || !appService) return;
 
     const handle = (url: string) => {
+      // moyue://redeem/{code} deep links are owned by useOpenRedeemLink;
+      // returning here keeps this hook's intent (article clip) clear and
+      // protects against future changes to the http(s) filter below.
+      if (url.startsWith('moyue://redeem/')) return;
       // iOS Share Extension forwards URLs to the main app in one of
       // two shapes — both are unwrapped to the inner article URL so
       // we can share the http(s) clip path with the Android side:

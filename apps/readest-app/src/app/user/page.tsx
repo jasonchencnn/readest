@@ -1,7 +1,7 @@
 'use client';
 
 import clsx from 'clsx';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEnv } from '@/context/EnvContext';
 import { useAuth } from '@/context/AuthContext';
@@ -83,8 +83,23 @@ const ProfilePage = () => {
   });
   const [epayCheckout, setEpayCheckout] = useState<EpayCheckout | null>(null);
 
+  // The page is the single destination for redemption-code deep links
+  // (web `/redeem?code=…` landing and desktop `moyue://redeem/…` both
+  // redirect here). Read the query string once and pass it to the card so
+  // it pre-fills + auto-focuses the input.
+  const redeemFromQuery = searchParams?.get('redeem') ?? undefined;
+  const redemptionCardRef = useRef<HTMLDivElement>(null);
+
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+
+  // When the user lands with `?redeem=…`, scroll the card into view so
+  // the pre-filled input is visible without a manual scroll.
+  useEffect(() => {
+    if (redeemFromQuery && redemptionCardRef.current) {
+      redemptionCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [redeemFromQuery]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -493,7 +508,12 @@ const ProfilePage = () => {
                               : handleStripeSubscribe
                         }
                       />
-                      <RedemptionCard onRedeemed={refreshPlanStats} />
+                      <div ref={redemptionCardRef}>
+                        <RedemptionCard
+                          initialCode={redeemFromQuery}
+                          onRedeemed={refreshPlanStats}
+                        />
+                      </div>
                     </div>
                     <div className='flex flex-col gap-y-8 px-6'>
                       <AccountActions
