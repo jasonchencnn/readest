@@ -70,6 +70,21 @@
   </supports>
 
   <releases>
+    <release version="0.1.0" date="2026-09-09">
+      <description>
+        <ul>
+          <li>墨阅（Moyue）v0.1.0 初版基线</li>
+          <li>品牌改名：Readest → 墨阅 / Moyue（拉丁 UI）</li>
+          <li>邀约制登录（Crockford 邀请码 + ADMIN_EMAILS 门禁）</li>
+          <li>会员档位（免费 100MB / Plus 2GB / Pro 5GB，月订 CNY）</li>
+          <li>易支付（epay）协议代码就绪（按需启用）</li>
+          <li>兑换码支付（完全绕开第三方支付接口，0 费率 0 开户费 0 合规风险）</li>
+          <li>三入口兑换：/user 卡片 / web 落地页 / moyue://redeem 深链</li>
+          <li>macOS 桌面端 + Android 移动端 打包就绪</li>
+          <li>测试基线 44 失败 = 预存（fork 同源），改名致损 0</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.12.1" date="2026-08-08">
       <description>
         <ul>
