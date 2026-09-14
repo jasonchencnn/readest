@@ -2,12 +2,29 @@
 
 > 服务器运维的唯一来源。所有命令在 `~/readest/docker/` 目录下执行。
 
+## 凭据位置
+
+> ⚠️ **本文件不包含任何密钥、密码、token 实际值**。所有生产凭据在仓库外的 `~/Documents/MyVault/Keys/` 目录，跟 SSH 私钥 / Android keystore 同位置。完整档案见 `~/Documents/MyVault/Keys/README.md`（含 SSH 私钥路径 + 指纹、CF tunnel access secret、keystore 密码位置、jasonchencnn GitHub fork 凭据、紧急恢复流程）。
+
+| 资源 | 仓库外位置 | 仓库内引用 |
+|---|---|---|
+| 生产服务器 SSH 私钥 | `~/Documents/MyVault/Keys/ssh-key-2026-08-31.key` | `~/.ssh/config` 3 个 alias：`oracle` / `ora` / `oracle-jump` |
+| Android 签名 keystore | `~/Documents/MyVault/Keys/moyue.keystore` + `.bak` + `.wrong-20260908.bak` | 仓库 `.gitignore` 排除；keystore.properties 在 `src-tauri/gen/android/app/`（gitignored） |
+| keystore 密码 | 1Password `moyue/keystore` 条目 | — |
+| Cloudflare Tunnel secret | `~/Documents/MyVault/Keys/README.md` 1.3 节 | — |
+| 凭据使用指南 | `~/Documents/MyVault/Keys/README.md` | 本节 |
+
+**首次接手人必读**：`cat ~/Documents/MyVault/Keys/README.md`（10 分钟搞清所有凭据位置和用法）
+
 ## 0. 快速连接
 
 ```bash
 ssh oracle                              # Cloudflare Tunnel 直连，需 sudo 才能 docker
 cd ~/readest/docker
 ```
+
+> `ssh oracle` 走 Cloudflare Tunnel，**家宽免热点直连**（服务器 sshd 只听 127.0.0.1:22，公网 22 已封死）。
+> SSH 私钥已配置在 `~/.ssh/config`，无需 `-i` 参数。
 
 > `ssh oracle` 走 Cloudflare Tunnel，**家宽免热点直连**（服务器 sshd 只听 127.0.0.1:22，公网 22 已封死）。
 
@@ -196,3 +213,9 @@ ssh oracle 'cd ~/readest/docker
   sudo docker compose logs --tail=100 -f readest-client
   sudo docker compose logs --tail=100 -f supabase-auth'
 ```
+
+---
+
+---
+
+> **sing-box 部署章节已迁出**，详见 `SINGBOX-DEPLOY.md`（按本仓库 `SINGBOX-STATUS-2026-09-10.md` 同位置维护）。
