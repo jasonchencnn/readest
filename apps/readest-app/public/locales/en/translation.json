@@ -105,5 +105,11 @@
   "Failed to download {{count}} book(s)_one": "Failed to download {{count}} book",
   "Failed to download {{count}} book(s)_other": "Failed to download {{count}} books",
   "Cancel all ({{count}})_one": "Cancel all ({{count}})",
-  "Cancel all ({{count}})_other": "Cancel all ({{count}})"
+  "Cancel all ({{count}})_other": "Cancel all ({{count}})",
+  "catalog.wikisource-zh.name": "Wikisource (Chinese)",
+  "catalog.wikisource-zh.description": "Public domain Chinese literature (classics, poetry, modern public-domain works, CC BY-SA + PD)",
+  "catalog.wikisource-en.name": "Wikisource (English)",
+  "catalog.wikisource-en.description": "Public domain English literature (Pride and Prejudice, Shakespeare, etc.)",
+  "catalog.archive-publicdomain.name": "Internet Archive (Public Domain)",
+  "catalog.archive-publicdomain.description": "3.3M+ public-domain texts via Archive.org (licenseurl: *publicdomain* filter)"
 }

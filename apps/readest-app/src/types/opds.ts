@@ -5,6 +5,12 @@
 // description for OPDS 1.x feeds where it lives in <summary>.
 import { SYMBOL as FOLIATE_SYMBOL } from 'foliate-js/opds.js';
 
+// N10 (v0.2.0 书源整合): AdapterType 通过 OPDSCatalog.adapterType 字段标识
+// 走哪个 adapter。留在这里避免循环 import（adapters/index.ts 已经从 '@/types/opds'
+// 导入 OPDSCatalog）。AdapterType 字面量用 string 兼容，避免在 types/opds.ts
+// 引入新模块依赖；运行时由 adapters/index.ts 做字符串字面量校验。
+export type AdapterTypeLiteral = 'opds' | 'mediawiki' | 'archive-advancedsearch' | 'custom-http';
+
 export const REL = {
   ACQ: 'http://opds-spec.org/acquisition',
   FACET: 'http://opds-spec.org/facet',
@@ -61,6 +67,15 @@ export interface OPDSCatalog {
    * surfaced in the OPDS UI.
    */
   lastSeenCipher?: Record<string, string>;
+  /**
+   * N10 (v0.2.0 书源整合): 标识该 catalog 走哪个 adapter。
+   * 缺省 = 'opds'，与 readest 上游行为完全一致（4 个复用源 / 自定义 URL 都走 OPDS）。
+   * 仅当 catalog 是非 OPDS 协议（如 zh.wikisource / en.wikisource / archive.org
+   * 公版 / 未来 N11a 自定义源）时填。
+   *
+   * 详见 apps/readest-app/src/app/opds/adapters/types.ts。
+   */
+  adapterType?: AdapterTypeLiteral;
 }
 
 export interface OPDSFeed {

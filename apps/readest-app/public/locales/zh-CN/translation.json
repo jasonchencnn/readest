@@ -2073,5 +2073,11 @@
   "Redemption failed, please try again later.": "兑换失败，请稍后重试",
   "Redemption success! {{months}} months of {{plan}} activated.": "兑换成功！{{plan}} 已激活 {{months}} 个月。",
   "Redirecting…": "正在跳转…",
-  "Click here if you are not redirected automatically.": "如果没有自动跳转，请点这里。"
+  "Click here if you are not redirected automatically.": "如果没有自动跳转，请点这里。",
+  "catalog.wikisource-zh.name": "中文维基文库",
+  "catalog.wikisource-zh.description": "公版中文典籍（古文 / 诗词 / 现代公版文献，CC BY-SA + PD）",
+  "catalog.wikisource-en.name": "维基文库（英文）",
+  "catalog.wikisource-en.description": "公版英文文学（Pride and Prejudice、莎士比亚全集等）",
+  "catalog.archive-publicdomain.name": "Internet Archive 公版",
+  "catalog.archive-publicdomain.description": "3.3M+ 公版文本（licenseurl: *publicdomain* 过滤）"
 }

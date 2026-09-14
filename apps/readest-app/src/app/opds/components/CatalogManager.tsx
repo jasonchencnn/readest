@@ -58,6 +58,7 @@ import {
 import ModalPortal from '@/components/ModalPortal';
 
 const POPULAR_CATALOGS: OPDSCatalog[] = [
+  // ---- readest 上游复用源（N10 不动 id / url）----
   {
     id: 'gutenberg',
     name: 'Project Gutenberg',
@@ -86,6 +87,35 @@ const POPULAR_CATALOGS: OPDSCatalog[] = [
     description: 'Free ebooks from authors who have "unglued" their books',
     icon: '🔓',
   },
+  // ---- N10 v0.2.0 新增合规章（公版 / CC / 授权）----
+  // 优先级 #1：中文维基文库（用户硬要求"至少 1 个中文源"）。
+  // adapterType='mediawiki' 走 MediaWiki opensearch 协议（N11a 自定义源添加流程
+  // 会走 ../adapters/validateCatalogWithAdapter 分叉；N10 popular 路径直接进
+  // store，不走 validate，跟 readest 上游 4 复用源行为一致）。
+  {
+    id: 'wikisource-zh',
+    name: '中文维基文库',
+    url: 'https://zh.wikisource.org/w/api.php',
+    description: '公版中文典籍（古文 / 诗词 / 现代公版文献，CC BY-SA + PD）',
+    icon: '📜',
+    adapterType: 'mediawiki',
+  },
+  {
+    id: 'wikisource-en',
+    name: 'Wikisource (English)',
+    url: 'https://en.wikisource.org/w/api.php',
+    description: 'Public domain English literature (Pride and Prejudice, Shakespeare, …)',
+    icon: '📜',
+    adapterType: 'mediawiki',
+  },
+  {
+    id: 'archive-publicdomain',
+    name: 'Internet Archive 公版',
+    url: 'https://archive.org/advancedsearch.php',
+    description: '3.3M+ public domain texts via Archive.org (licenseurl: *publicdomain*)',
+    icon: '🏛️',
+    adapterType: 'archive-advancedsearch',
+  },
 ];
 
 async function validateOPDSCatalog(
@@ -94,6 +124,10 @@ async function validateOPDSCatalog(
   password?: string,
   customHeaders?: Record<string, string>,
 ): Promise<{ valid: boolean; error?: string }> {
+  // N10 范围内保持 readest 上游原行为：直接走 validateOPDSURL（OPDS 协议校验）。
+  // 未来 N11a 接入自定义源添加流程时，CatalogManager.handleAddCatalog 应
+  // 改调 ../adapters/validateCatalogWithAdapter（按 catalog.adapterType 分叉）；
+  // 本函数保留作为"添加 OPDS URL"的入口。
   const result = await validateOPDSURL(url, username, password, isWebAppPlatform(), customHeaders);
   return { valid: result.isValid, error: result.error };
 }
