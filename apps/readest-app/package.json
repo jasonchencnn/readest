@@ -1,6 +1,10 @@
 {
   "name": "@readest/readest-app",
   "version": "0.1.0",
+  "moyue": {
+    "upstreamBase": "0.12.8",
+    "upstreamRef": "c3a95ba"
+  },
   "private": true,
   "type": "module",
   "scripts": {
