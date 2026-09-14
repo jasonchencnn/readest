@@ -4,7 +4,10 @@ import { QuotaType, UserPlan } from '@/types/quota';
 import { getTranslationQuota } from '@/utils/access';
 import { getDailyUsage } from '@/services/translators/utils';
 import { getAPIBaseUrl } from '@/services/environment';
-import { setCachedUserPlan } from '@/services/sync/cloudSyncProvider';
+import {
+  setCachedCustomizationPurchased,
+  setCachedUserPlan,
+} from '@/services/sync/cloudSyncProvider';
 import { useTranslation } from './useTranslation';
 
 export const useQuotaStats = (briefName = false) => {
@@ -12,11 +15,24 @@ export const useQuotaStats = (briefName = false) => {
   const { token, user } = useAuth();
   const [quotas, setQuotas] = useState<QuotaType[]>([]);
   const [userProfilePlan, setUserProfilePlan] = useState<UserPlan | undefined>(undefined);
+  // Derived from the server-resolved plan (not state): the `purchase` tier is
+  // the fork's Full Customization (lifetime) unlock, so entitlement follows the
+  // plan the backend reports rather than a JWT claim.
+  const customizationPurchased = userProfilePlan === 'purchase';
 
   // Membership state lives server-side (plans/files tables — migration 020);
   // the client JWT carries no plan claim, so resolve it from the API.
   const fetchPlanStats = useCallback(async () => {
-    if (!user || !token) return;
+    if (!user || !token) {
+      // Signing out must clear the module-level entitlement caches: they are
+      // read synchronously by non-React gates (`resolveCloudSyncGate`), so a
+      // stale value would leave a signed-out session looking premium. Absorbed
+      // from upstream's useQuotaStats; plan *resolution* stays server-side.
+      setUserProfilePlan(undefined);
+      setCachedUserPlan(undefined);
+      setCachedCustomizationPurchased(false);
+      return;
+    }
     try {
       const response = await fetch(`${getAPIBaseUrl()}/user/plan`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -66,6 +82,7 @@ export const useQuotaStats = (briefName = false) => {
       // Non-React modules (transferManager, syncCategories) need the plan
       // synchronously for the cloud-sync provider gate; cache it here.
       setCachedUserPlan(plan);
+      setCachedCustomizationPurchased(plan === 'purchase');
       setUserProfilePlan(plan);
       setQuotas([storageQuota, translationQuota]);
     } catch (error) {
@@ -84,5 +101,6 @@ export const useQuotaStats = (briefName = false) => {
     // Hand the child a way to re-pull plan + quotas after a server-side grant
     // (e.g. /api/redeem) without forcing a full page reload.
     refresh: fetchPlanStats,
+    customizationPurchased,
   };
 };

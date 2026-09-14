@@ -17,7 +17,7 @@ import { eventDispatcher } from '@/utils/event';
 import { getAPIBaseUrl, isTauriAppPlatform } from '@/services/environment';
 import { getRuntimeConfig } from '@/services/runtimeConfig';
 import { MEMBERSHIP_PLANS } from '@/services/constants';
-import { getPlanDetails } from './utils/plan';
+import { getPlanDetails, shouldUseBillingPortal } from './utils/plan';
 import { Toast } from '@/components/Toast';
 import {
   purchaseIAPProduct,
@@ -35,6 +35,7 @@ import {
   handleStripeCheckoutError,
   getSubscriptionSuccessUrl as getStripeSubscriptionSuccessUrl,
   type StripeAvailablePlan,
+  type StripePortalFlow,
 } from '@/libs/payment/stripe/client';
 import LegalLinks from '@/components/LegalLinks';
 import Spinner from '@/components/Spinner';
@@ -178,7 +179,12 @@ const ProfilePage = () => {
   // never matters since subscribe handlers only fire on user clicks.
   const isEpayProvider = getRuntimeConfig()?.paymentProvider === 'epay';
 
-  const { quotas, userProfilePlan = 'free', refresh: refreshPlanStats } = useQuotaStats();
+  const {
+    quotas,
+    userProfilePlan = 'free',
+    refresh: refreshPlanStats,
+    customizationPurchased,
+  } = useQuotaStats();
   const {
     handleLogout,
     handleResetPassword,
@@ -217,6 +223,14 @@ const ProfilePage = () => {
 
   const handleStripeSubscribe = async (productId?: string, planType: PlanType = 'subscription') => {
     if (!productId) return;
+
+    // Someone who already holds a subscription changes plan or billing period
+    // in the billing portal. Opening a second checkout session would leave the
+    // old subscription running alongside the new one and bill them twice.
+    if (shouldUseBillingPortal(userProfilePlan, planType)) {
+      await openStripePortal('subscription_update');
+      return;
+    }
 
     setLoading(true);
     try {
@@ -369,17 +383,10 @@ const ProfilePage = () => {
     }
   };
 
-  const handleManageSubscription = async () => {
-    if (isEpayProvider) {
-      eventDispatcher.dispatch('toast', {
-        type: 'info',
-        message: _('For subscription management, please contact the administrator.'),
-      });
-      return;
-    }
+  const openStripePortal = async (flow?: StripePortalFlow) => {
     setLoading(true);
     try {
-      const url = await createStripePortalSession();
+      const url = await createStripePortalSession(flow);
       await redirectToStripePortal(url);
     } catch (error) {
       console.error('Error creating portal session:', error);
@@ -390,6 +397,17 @@ const ProfilePage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleManageSubscription = () => {
+    if (isEpayProvider) {
+      eventDispatcher.dispatch('toast', {
+        type: 'info',
+        message: _('For subscription management, please contact the administrator.'),
+      });
+      return;
+    }
+    return openStripePortal();
   };
 
   const handleDeleteWithMessage = () => {
@@ -496,10 +514,11 @@ const ProfilePage = () => {
                   </div>
                 ) : (
                   <>
-                    <div className='flex flex-col gap-y-8 sm:px-6'>
+                    <div className='flex flex-col gap-y-8 px-2 sm:px-6'>
                       <PlansComparison
                         availablePlans={availablePlans}
                         userPlan={userProfilePlan}
+                        customizationPurchased={customizationPurchased}
                         onSubscribe={
                           appService.hasIAP && iapAvailable
                             ? handleIAPSubscribe

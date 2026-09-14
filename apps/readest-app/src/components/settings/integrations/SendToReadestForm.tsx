@@ -51,7 +51,8 @@ const SendToReadestForm: React.FC<SendToReadestFormProps> = ({ onBack }) => {
   // stay up rather than briefly flashing the upgrade card for a paid user
   // on a slow client.
   const [userPlan, setUserPlan] = useState<UserPlan | null>(null);
-  const canUseEmailIn = userPlan !== null && isEmailInPlan(userPlan);
+  const [customizationPurchased, setCustomizationPurchased] = useState(false);
+  const canUseEmailIn = userPlan !== null && isEmailInPlan(userPlan, customizationPurchased);
   // Editing affordances stay collapsed once configured, keeping the panel
   // minimal; the refresh / plus icons reveal the input rows.
   const [editingAddress, setEditingAddress] = useState(false);
@@ -88,8 +89,10 @@ const SendToReadestForm: React.FC<SendToReadestFormProps> = ({ onBack }) => {
           // network failure → fall back to 'free' (matches old JWT default)
         }
       }
+      const purchasedCustomization = plan === 'purchase';
       setUserPlan(plan);
-      if (!isEmailInPlan(plan)) {
+      setCustomizationPurchased(purchasedCustomization);
+      if (!isEmailInPlan(plan, purchasedCustomization)) {
         setLoading(false);
         return;
       }
@@ -297,7 +300,7 @@ const SendToReadestForm: React.FC<SendToReadestFormProps> = ({ onBack }) => {
                 <div className='border-base-200 flex items-center gap-2 border-t px-4 py-3'>
                   <input
                     type='text'
-                    className='input input-sm input-bordered eink-bordered min-w-0 flex-1'
+                    className='input input-sm eink-bordered min-w-0 flex-1'
                     value={slugInput}
                     onChange={(e) => setSlugInput(e.target.value)}
                     onKeyDown={(e) => {
@@ -374,7 +377,7 @@ const SendToReadestForm: React.FC<SendToReadestFormProps> = ({ onBack }) => {
                 <div className='border-base-200 flex items-center gap-2 border-t px-4 py-3'>
                   <input
                     type='email'
-                    className='input input-sm input-bordered eink-bordered min-w-0 flex-1'
+                    className='input input-sm eink-bordered min-w-0 flex-1'
                     placeholder={_('name@example.com')}
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
@@ -402,7 +405,7 @@ const SendToReadestForm: React.FC<SendToReadestFormProps> = ({ onBack }) => {
                 {activity.map((item) => (
                   <div key={item.id} className='flex items-center gap-3 px-4 py-3'>
                     <div className='flex min-w-0 flex-1 flex-col'>
-                      <SettingLabel className='!line-clamp-1'>
+                      <SettingLabel className='line-clamp-1!'>
                         {item.filename || item.url || _('Untitled')}
                       </SettingLabel>
                       <span className='text-base-content/60 text-[0.8em]'>

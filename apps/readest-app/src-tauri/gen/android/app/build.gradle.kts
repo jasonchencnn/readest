@@ -23,7 +23,25 @@ android {
     compileSdk = 36
     namespace = "com.moyue.app"
     defaultConfig {
-        manifestPlaceholders["usesCleartextTraffic"] = "false"
+        // Plain-http LAN media servers (Audiobookshelf and friends) stream through
+        // the webview audio element, which obeys this manifest flag; native plugin
+        // HTTP already allows cleartext. Scoped alternative (custom-scheme stream
+        // proxy) is tracked as a follow-up.
+        manifestPlaceholders["usesCleartextTraffic"] = "true"
+        // Sentry DSN precedence: environment (CI secret / shell export) wins,
+        // else the gitignored .env.local, else .env at the app root (../../../
+        // from this module). Empty => Sentry auto-init no-ops.
+        manifestPlaceholders["sentryDsn"] = System.getenv("SENTRY_DSN")?.takeIf { it.isNotBlank() }
+            ?: listOf("../../../.env.local", "../../../.env")
+                .map { rootProject.file(it) }
+                .filter { it.exists() }
+                .firstNotNullOfOrNull { f ->
+                    f.readLines()
+                        .map { it.trim() }
+                        .firstOrNull { it.startsWith("SENTRY_DSN=") }
+                        ?.substringAfter("=")?.trim()?.trim('"', '\'')?.takeIf { it.isNotEmpty() }
+                }
+            ?: ""
         applicationId = "com.moyue.app"
         val storeFlavor = project.findProperty("storeFlavor")?.toString() ?: "foss"
         missingDimensionStrategy("store", storeFlavor)

@@ -28,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Sender allowlist only matters for the email-in channel — gate it too.
   const plan = (await getUserPlanData(user.id)).plan;
-  if (!isEmailInPlan(plan)) {
+  if (!isEmailInPlan(plan, plan === 'purchase')) {
     return res.status(403).json({
       error: 'Email-in is available on the Plus, Pro, and Lifetime plans',
       code: 'plan_required',

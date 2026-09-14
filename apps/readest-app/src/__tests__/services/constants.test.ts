@@ -254,6 +254,7 @@ describe('services/constants', () => {
         font: true,
         texture: true,
         opds_catalog: true,
+        abs_server: true,
         settings: true,
       });
     });
@@ -652,6 +653,7 @@ describe('services/constants', () => {
       expect(typeof DEFAULT_TTS_CONFIG.ttsVoice).toBe('string');
       expect(typeof DEFAULT_TTS_CONFIG.ttsLocation).toBe('string');
       expect(typeof DEFAULT_TTS_CONFIG.ttsMediaMetadata).toBe('string');
+      expect(DEFAULT_TTS_CONFIG.ttsSkipInlineAnnotations).toBe(false);
     });
 
     it('has ttsHighlightOptions with style and color', () => {

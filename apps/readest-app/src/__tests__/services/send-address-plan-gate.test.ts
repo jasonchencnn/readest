@@ -107,13 +107,13 @@ const planData = (plan: UserPlan) => ({
 
 describe('isEmailInPlan helper', () => {
   test('allows plus, pro, and lifetime (purchase)', () => {
-    expect(isEmailInPlan('plus')).toBe(true);
-    expect(isEmailInPlan('pro')).toBe(true);
-    expect(isEmailInPlan('purchase')).toBe(true);
+    expect(isEmailInPlan('plus', false)).toBe(true);
+    expect(isEmailInPlan('pro', false)).toBe(true);
+    expect(isEmailInPlan('purchase', false)).toBe(false);
   });
 
   test('blocks the free tier', () => {
-    expect(isEmailInPlan('free')).toBe(false);
+    expect(isEmailInPlan('free', false)).toBe(false);
   });
 });
 

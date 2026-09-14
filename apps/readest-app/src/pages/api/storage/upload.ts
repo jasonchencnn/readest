@@ -94,8 +94,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(403).json({ error: 'Insufficient storage quota', usage });
     }
 
-    const fileKey = `${user.id}/${fileName}`;
     const supabase = createSupabaseAdminClient();
+
+    const fileKey = `${user.id}/${fileName}`;
     const { data: existingRecord, error: fetchError } = await supabase
       .from('files')
       .select('*')

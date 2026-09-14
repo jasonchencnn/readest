@@ -38,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // requiredPlans) matters — UI keys off it. Tier resolves server-side
   // from the plans table.
   const plan = (await getUserPlanData(user.id)).plan;
-  if (!isEmailInPlan(plan)) {
+  if (!isEmailInPlan(plan, plan === 'purchase')) {
     return res.status(403).json({
       error: 'Email-in is available on the Plus, Pro, and Lifetime plans',
       code: 'plan_required',
