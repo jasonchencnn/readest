@@ -72,16 +72,35 @@ describe('getUserPlanData (server-side tier resolution)', () => {
     });
   });
 
-  it('treats rpc errors as free tier instead of throwing', async () => {
-    rpcMock.mockImplementation(() =>
-      Promise.resolve({ data: null, error: { message: 'function not found' } }),
-    );
+  it('resolves to the free tier — never a paid tier — when get_user_plan errors', async () => {
+    rpcMock.mockImplementation((fn: string) => {
+      if (fn === 'get_user_plan') {
+        return Promise.resolve({ data: null, error: { message: 'function not found' } });
+      }
+      // A readable usage counter keeps the resolution alive; only the tier
+      // lookup fails here.
+      return Promise.resolve({ data: '123', error: null });
+    });
     mockPlansRow(null);
 
     const data = await getUserPlanData('user-3');
     expect(data.plan).toBe('free');
     expect(data.quota).toBe(100 * 1024 * 1024);
-    expect(data.usage).toBe(0);
+    expect(data.usage).toBe(123);
+  });
+
+  it('fails closed (rejects) when the usage counter cannot be read', async () => {
+    // Coercing an unreadable usage counter to 0 is the fail-open that let the
+    // storage gate authorise over-quota uploads — it must reject instead.
+    rpcMock.mockImplementation((fn: string) => {
+      if (fn === 'get_user_plan') {
+        return Promise.resolve({ data: 'plus', error: null });
+      }
+      return Promise.resolve({ data: null, error: { message: 'function not found' } });
+    });
+    mockPlansRow(null);
+
+    await expect(getUserPlanData('user-3')).rejects.toThrow(/get_storage_usage failed/);
   });
 
   it('maps each tier to its configured quota', async () => {

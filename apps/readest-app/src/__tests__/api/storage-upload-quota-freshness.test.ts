@@ -1,19 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-// `storage_usage_bytes` is a JWT claim, minted when the access token is issued
-// and frozen for its whole lifetime. Authorising an upload against it means
-// every request inside that window is measured against the same stale
-// baseline, so a user sitting just under quota can keep uploading until the
-// token refreshes. The entitlement half (`quota`) is fine to read from the
-// token — it only moves on purchase or refund — but the counter has to come
-// from the database.
+// Moyue resolves the storage tier *and* the usage counter server-side, from the
+// `plans` table via the `get_user_plan` / `get_storage_usage` SECURITY DEFINER
+// RPCs (`getUserPlanData`) — the client JWT carries no plan or usage claim. So
+// the gate is driven through `getUserPlanData` here, and the invariant under
+// test is the one that matters: the gate must always authorise against the live
+// counter and must never fail open when that counter cannot be read.
 
 const validateUserAndTokenMock = vi.fn();
 const getUploadSignedUrlMock = vi.fn();
 const getDownloadSignedUrlMock = vi.fn();
 const createSupabaseAdminClientMock = vi.fn();
-const getStoragePlanDataMock = vi.fn();
+const getUserPlanDataMock = vi.fn();
 
 vi.mock('@/utils/cors', () => ({
   corsAllMethods: {},
@@ -21,8 +20,10 @@ vi.mock('@/utils/cors', () => ({
 }));
 vi.mock('@/utils/access', () => ({
   validateUserAndToken: (...a: unknown[]) => validateUserAndTokenMock(...a),
-  getStoragePlanData: (...a: unknown[]) => getStoragePlanDataMock(...a),
   STORAGE_QUOTA_GRACE_BYTES: 0,
+}));
+vi.mock('@/utils/plan', () => ({
+  getUserPlanData: (...a: unknown[]) => getUserPlanDataMock(...a),
 }));
 vi.mock('@/utils/object', async (orig) => {
   const actual = await orig<typeof import('@/utils/object')>();
@@ -53,44 +54,45 @@ const makeReqRes = (body: Record<string, unknown>) => {
   return { req, res };
 };
 
-/** `plans.storage_usage_bytes` is what the DB trigger keeps current. */
-const stubSupabase = (liveUsageBytes: number | null) => {
-  const plansSingle = vi
-    .fn()
-    .mockResolvedValue(
-      liveUsageBytes === null
-        ? { data: null, error: { code: 'PGRST116' } }
-        : { data: { storage_usage_bytes: liveUsageBytes }, error: null },
-    );
-  const filesSingle = vi
+/**
+ * Only the `files` table is touched after the gate: a lookup for an existing
+ * row (miss ⇒ PGRST116) then an insert. `single` is shared across both calls
+ * so the two `mockResolvedValueOnce`s apply in call order.
+ */
+const stubSupabase = () => {
+  const single = vi
     .fn()
     .mockResolvedValueOnce({ data: null, error: { code: 'PGRST116' } })
     .mockResolvedValueOnce({ data: { file_size: 1 }, error: null });
 
-  const make = (single: unknown) => {
+  const make = (singleFn: unknown) => {
     const builder: Record<string, unknown> = {};
     for (const m of ['select', 'eq', 'limit', 'insert', 'is']) builder[m] = () => builder;
-    builder['single'] = single;
+    builder['single'] = singleFn;
     return builder;
   };
   createSupabaseAdminClientMock.mockReset().mockReturnValue({
-    from: (table: string) => (table === 'plans' ? make(plansSingle) : make(filesSingle)),
+    from: () => make(single),
   });
-  return { plansSingle };
 };
 
 beforeEach(() => {
   validateUserAndTokenMock.mockReset().mockResolvedValue({ user: { id: 'user-1' }, token: 'tok' });
   getUploadSignedUrlMock.mockReset().mockResolvedValue('https://r2/upload');
   getDownloadSignedUrlMock.mockReset().mockResolvedValue('https://r2/download');
-  // The stale snapshot the token was minted with: the account looked empty.
-  getStoragePlanDataMock.mockReset().mockReturnValue({ usage: 0, quota: QUOTA });
+  getUserPlanDataMock.mockReset();
+  stubSupabase();
 });
 
 describe('POST /api/storage/upload — quota freshness', () => {
-  it('refuses an upload that the live usage puts over quota, despite a stale claim', async () => {
-    // Token says 0 bytes used; the database says the account is already full.
-    stubSupabase(QUOTA);
+  it('refuses an upload that the live usage puts over quota', async () => {
+    // The account is already full — a fresh request must be refused.
+    getUserPlanDataMock.mockResolvedValue({
+      plan: 'free',
+      usage: QUOTA,
+      quota: QUOTA,
+      currentPeriodEnd: null,
+    });
     const { req, res } = makeReqRes({
       fileName: 'Readest/Books/hash.epub',
       fileSize: 90 * 1024 * 1024,
@@ -102,8 +104,13 @@ describe('POST /api/storage/upload — quota freshness', () => {
     expect(getUploadSignedUrlMock).not.toHaveBeenCalled();
   });
 
-  it('reports the live usage, not the token snapshot', async () => {
-    stubSupabase(400 * 1024 * 1024);
+  it('reports the live usage, not a stale snapshot', async () => {
+    getUserPlanDataMock.mockResolvedValue({
+      plan: 'plus',
+      usage: 400 * 1024 * 1024,
+      quota: QUOTA,
+      currentPeriodEnd: null,
+    });
     const { req, res } = makeReqRes({
       fileName: 'Readest/Books/hash.epub',
       fileSize: 10 * 1024 * 1024,
@@ -118,7 +125,12 @@ describe('POST /api/storage/upload — quota freshness', () => {
   });
 
   it('still allows an upload that genuinely fits', async () => {
-    stubSupabase(10 * 1024 * 1024);
+    getUserPlanDataMock.mockResolvedValue({
+      plan: 'plus',
+      usage: 10 * 1024 * 1024,
+      quota: QUOTA,
+      currentPeriodEnd: null,
+    });
     const { req, res } = makeReqRes({
       fileName: 'Readest/Books/hash.epub',
       fileSize: 5 * 1024 * 1024,
@@ -130,10 +142,9 @@ describe('POST /api/storage/upload — quota freshness', () => {
     expect(getUploadSignedUrlMock).toHaveBeenCalled();
   });
 
-  it('falls back to the token claim when the plans row cannot be read', async () => {
-    // A missing row must not become "0 bytes used, upload anything".
-    stubSupabase(null);
-    getStoragePlanDataMock.mockReturnValue({ usage: QUOTA, quota: QUOTA });
+  it('refuses the upload when the usage counter cannot be read (no fail-open)', async () => {
+    // An unreadable counter must not become "0 bytes used, upload anything".
+    getUserPlanDataMock.mockRejectedValue(new Error('get_storage_usage failed'));
     const { req, res } = makeReqRes({
       fileName: 'Readest/Books/hash.epub',
       fileSize: 90 * 1024 * 1024,

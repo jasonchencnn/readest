@@ -29,8 +29,17 @@ export const getUserPlanData = async (userId: string): Promise<UserPlanData> => 
       .maybeSingle(),
   ]);
 
+  // Fail closed on the usage counter: an unreadable `get_storage_usage` must
+  // never be coerced to "0 bytes used". Every consumer treats 0 as "the account
+  // is empty", so the storage gate would then authorise an upload that actually
+  // exceeds the quota. Reject instead, and let the caller refuse the operation.
+  if (usageResult.error) {
+    console.error('get_storage_usage failed:', usageResult.error.message);
+    throw new Error(`get_storage_usage failed: ${usageResult.error.message}`);
+  }
+  // Fail safe on entitlement: an unreadable tier resolves to free, so a
+  // transient error can never *grant* a paid tier.
   if (planResult.error) console.error('get_user_plan failed:', planResult.error.message);
-  if (usageResult.error) console.error('get_storage_usage failed:', usageResult.error.message);
 
   const plan: UserPlan = (planResult.data as UserPlan | null) || 'free';
   return {
