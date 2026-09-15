@@ -8,6 +8,7 @@ export interface ReadestRuntimeConfig {
   fontBaseUrl?: string;
   selfHosted?: boolean;
   paymentProvider?: string;
+  enableUpdater?: boolean;
 }
 
 declare global {
@@ -62,4 +63,14 @@ export const getServerRuntimeConfig = (): ReadestRuntimeConfig => ({
   // NOT a NEXT_PUBLIC build arg — so the published image can switch providers
   // without rebuilding.
   paymentProvider: process.env['PAYMENT_PROVIDER'] ?? process.env['NEXT_PUBLIC_PAYMENT_PROVIDER'],
+  // The in-app updater is OFF by default on Moyue builds: the maintainer
+  // distributes builds directly, never via the official release feeds, so no
+  // request is made to any update host. A deployment opts back in with an
+  // explicit `ENABLE_UPDATER=true`. This is deliberately NOT the same switch as
+  // the build-time `NEXT_PUBLIC_DISABLE_UPDATER` that `nativeAppService` reads
+  // to hide the updater UI when the platform cannot self-update — that one is
+  // about platform capability, this one about the feed.
+  enableUpdater:
+    (process.env['ENABLE_UPDATER'] || process.env['NEXT_PUBLIC_ENABLE_UPDATER']) === 'true' ||
+    undefined,
 });

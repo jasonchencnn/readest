@@ -7,6 +7,7 @@ import { ScrollBarStyle } from '@tauri-apps/api/window';
 import { TranslationFunc } from '@/hooks/useTranslation';
 import { setUpdaterWindowVisible } from '@/components/UpdaterWindow';
 import { isTauriAppPlatform } from '@/services/environment';
+import { getRuntimeConfig } from '@/services/runtimeConfig';
 import { getAppVersion, isUpdateNewer } from '@/utils/version';
 import {
   CHECK_UPDATE_INTERVAL_SEC,
@@ -18,16 +19,21 @@ import {
 const LAST_CHECK_KEY = 'lastAppUpdateCheck';
 
 // Moyue (self-maintained) build: updates are distributed by the maintainer
-// directly, never via the official release feeds. Both the automatic check on
-// startup and the manual check in the About window are disabled entirely —
-// no request is made to any update host. The switch reads the same
-// `NEXT_PUBLIC_*` mechanism the rest of the app uses (`nativeAppService`
-// hides the updater UI off `NEXT_PUBLIC_DISABLE_UPDATER`), but defaults to
-// disabled: only an explicit `NEXT_PUBLIC_UPDATES_DISABLED=false` — which no
-// shipped env sets — turns the checks back on, so the release path keeps
-// making zero update-host requests while the resolution logic below stays
-// exercisable from tests and from a future self-hosted feed.
-const updatesDisabled = (): boolean => process.env['NEXT_PUBLIC_UPDATES_DISABLED'] !== 'false';
+// directly, never via the official release feeds, so both the automatic check
+// on startup and the manual check in the About window are disabled by default —
+// no request is made to any update host. A deployment opts back in by setting
+// `enableUpdater: true` in the runtime config (or `ENABLE_UPDATER=true` on the
+// server, which is what serialises it into `window.__READEST_RUNTIME_CONFIG`).
+//
+// Not to be confused with `NEXT_PUBLIC_DISABLE_UPDATER`, which is a separate,
+// build-time switch `nativeAppService` reads to *hide the updater UI* on a
+// platform that cannot self-update (Flatpak, a deb/rpm install). That one is
+// about platform capability; this one is about which feed to follow.
+const updaterEnabled = (): boolean =>
+  getRuntimeConfig()?.enableUpdater === true ||
+  // `||` not `??`, so an explicitly blank ENABLE_UPDATER falls through to the
+  // NEXT_PUBLIC_ build arg instead of masking it (same shape as isSelfHosted).
+  (process.env['ENABLE_UPDATER'] || process.env['NEXT_PUBLIC_ENABLE_UPDATER']) === 'true';
 
 const showUpdateWindow = (latestVersion: string, scrollBarStyle: ScrollBarStyle) => {
   const win = new WebviewWindow('updater', {
@@ -152,7 +158,7 @@ export const checkForAppUpdates = async (
   isAutoCheck = true,
   updateChannel: 'stable' | 'nightly' = 'stable',
 ): Promise<boolean> => {
-  if (updatesDisabled()) return false;
+  if (!updaterEnabled()) return false;
   const lastCheck = localStorage.getItem(LAST_CHECK_KEY);
   const now = Date.now();
   if (isAutoCheck && lastCheck && now - parseInt(lastCheck, 10) < CHECK_UPDATE_INTERVAL_SEC * 1000)
@@ -231,7 +237,7 @@ export const getLastShownReleaseNotesVersion = () => {
 };
 
 export const checkAppReleaseNotes = async (isAutoCheck = true) => {
-  if (updatesDisabled()) return false;
+  if (!updaterEnabled()) return false;
   const currentVersion = getAppVersion();
   const lastShownVersion = getLastShownReleaseNotesVersion();
   if ((lastShownVersion && semver.gt(currentVersion, lastShownVersion)) || !isAutoCheck) {
