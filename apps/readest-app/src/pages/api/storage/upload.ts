@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { createSupabaseAdminClient } from '@/utils/supabase';
 import { corsAllMethods, runMiddleware } from '@/utils/cors';
 import { validateUserAndToken, STORAGE_QUOTA_GRACE_BYTES } from '@/utils/access';
-import { getUserPlanData, type UserPlanData } from '@/utils/plan';
+import { getUserPlanData } from '@/utils/plan';
 import { getDownloadSignedUrl, getUploadSignedUrl, isSafeObjectKeyName } from '@/utils/object';
 import {
   READEST_PUBLIC_ASSETS_BASE_URL,
@@ -89,13 +89,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Tier quota is resolved server-side from the plans table — the client
     // token carries no plan claim, so this is the single enforcement point.
-    let planData: UserPlanData;
-    try {
-      planData = await getUserPlanData(user.id);
-    } catch (error) {
-      // Fail closed: if the usage counter cannot be read we cannot prove the
-      // upload fits, so refuse it rather than silently treating usage as 0.
-      console.error('Failed to resolve storage quota:', error);
+    const planData = await getUserPlanData(user.id);
+    if (planData.usageUnavailable) {
+      // Fail closed: without the live counter we cannot prove the upload fits,
+      // so refuse it rather than treating usage as 0.
       return res.status(403).json({ error: 'Cannot verify storage quota' });
     }
     const { usage, quota } = planData;

@@ -113,7 +113,14 @@ export async function POST(request: Request, { params }: RouteParams) {
   // Quota check before doing any byte-copy work. Tier + usage are resolved
   // server-side from the plans/files tables — consistent with how the
   // upload endpoint enforces it.
-  const { usage, quota } = await getUserPlanData(user.id);
+  const { usage, quota, usageUnavailable } = await getUserPlanData(user.id);
+  if (usageUnavailable) {
+    // Fail closed: without the live counter the copy cannot be authorised.
+    return NextResponse.json(
+      { error: 'Cannot verify storage quota', code: 'quota_unavailable' },
+      { status: 503 },
+    );
+  }
   if (usage + share.bookSize > quota + STORAGE_QUOTA_GRACE_BYTES) {
     return NextResponse.json(
       { error: 'Insufficient storage quota', code: 'quota_exceeded', usage, quota },

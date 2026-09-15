@@ -48,6 +48,7 @@ describe('getUserPlanData (server-side tier resolution)', () => {
       usage: 123456789,
       quota: 2 * 1024 * 1024 * 1024,
       currentPeriodEnd: '2026-10-01T00:00:00Z',
+      usageUnavailable: false,
     });
   });
 
@@ -69,6 +70,7 @@ describe('getUserPlanData (server-side tier resolution)', () => {
       usage: 42,
       quota: 100 * 1024 * 1024,
       currentPeriodEnd: null,
+      usageUnavailable: false,
     });
   });
 
@@ -87,11 +89,14 @@ describe('getUserPlanData (server-side tier resolution)', () => {
     expect(data.plan).toBe('free');
     expect(data.quota).toBe(100 * 1024 * 1024);
     expect(data.usage).toBe(123);
+    expect(data.usageUnavailable).toBe(false);
   });
 
-  it('fails closed (rejects) when the usage counter cannot be read', async () => {
-    // Coercing an unreadable usage counter to 0 is the fail-open that let the
-    // storage gate authorise over-quota uploads — it must reject instead.
+  it('flags — without throwing — an unreadable usage counter', async () => {
+    // Coercing an unreadable counter to 0 silently is the fail-open that let
+    // the storage gate authorise over-quota uploads. The resolver no longer
+    // throws either: only the two usage-authorising gates refuse on the flag,
+    // every other caller keeps working (see plan-usage-unavailable.test.ts).
     rpcMock.mockImplementation((fn: string) => {
       if (fn === 'get_user_plan') {
         return Promise.resolve({ data: 'plus', error: null });
@@ -100,7 +105,13 @@ describe('getUserPlanData (server-side tier resolution)', () => {
     });
     mockPlansRow(null);
 
-    await expect(getUserPlanData('user-3')).rejects.toThrow(/get_storage_usage failed/);
+    const data = await getUserPlanData('user-3');
+    expect(data.usageUnavailable).toBe(true);
+    expect(data.usage).toBe(0);
+    // The entitlement half resolves normally; an unreadable counter must not
+    // downgrade or misreport the tier.
+    expect(data.plan).toBe('plus');
+    expect(data.quota).toBe(2 * 1024 * 1024 * 1024);
   });
 
   it('maps each tier to its configured quota', async () => {

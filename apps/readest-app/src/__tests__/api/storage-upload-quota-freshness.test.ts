@@ -92,6 +92,7 @@ describe('POST /api/storage/upload — quota freshness', () => {
       usage: QUOTA,
       quota: QUOTA,
       currentPeriodEnd: null,
+      usageUnavailable: false,
     });
     const { req, res } = makeReqRes({
       fileName: 'Readest/Books/hash.epub',
@@ -110,6 +111,7 @@ describe('POST /api/storage/upload — quota freshness', () => {
       usage: 400 * 1024 * 1024,
       quota: QUOTA,
       currentPeriodEnd: null,
+      usageUnavailable: false,
     });
     const { req, res } = makeReqRes({
       fileName: 'Readest/Books/hash.epub',
@@ -130,6 +132,7 @@ describe('POST /api/storage/upload — quota freshness', () => {
       usage: 10 * 1024 * 1024,
       quota: QUOTA,
       currentPeriodEnd: null,
+      usageUnavailable: false,
     });
     const { req, res } = makeReqRes({
       fileName: 'Readest/Books/hash.epub',
@@ -144,7 +147,13 @@ describe('POST /api/storage/upload — quota freshness', () => {
 
   it('refuses the upload when the usage counter cannot be read (no fail-open)', async () => {
     // An unreadable counter must not become "0 bytes used, upload anything".
-    getUserPlanDataMock.mockRejectedValue(new Error('get_storage_usage failed'));
+    getUserPlanDataMock.mockResolvedValue({
+      plan: 'plus',
+      usage: 0,
+      quota: QUOTA,
+      currentPeriodEnd: null,
+      usageUnavailable: true,
+    });
     const { req, res } = makeReqRes({
       fileName: 'Readest/Books/hash.epub',
       fileSize: 90 * 1024 * 1024,
