@@ -17,11 +17,17 @@ import {
 
 const LAST_CHECK_KEY = 'lastAppUpdateCheck';
 
-// ReadestCN (self-maintained) build: updates are distributed by the maintainer
+// Moyue (self-maintained) build: updates are distributed by the maintainer
 // directly, never via the official release feeds. Both the automatic check on
 // startup and the manual check in the About window are disabled entirely —
-// no request is made to any update host.
-const UPDATES_DISABLED = true;
+// no request is made to any update host. The switch reads the same
+// `NEXT_PUBLIC_*` mechanism the rest of the app uses (`nativeAppService`
+// hides the updater UI off `NEXT_PUBLIC_DISABLE_UPDATER`), but defaults to
+// disabled: only an explicit `NEXT_PUBLIC_UPDATES_DISABLED=false` — which no
+// shipped env sets — turns the checks back on, so the release path keeps
+// making zero update-host requests while the resolution logic below stays
+// exercisable from tests and from a future self-hosted feed.
+const updatesDisabled = (): boolean => process.env['NEXT_PUBLIC_UPDATES_DISABLED'] !== 'false';
 
 const showUpdateWindow = (latestVersion: string, scrollBarStyle: ScrollBarStyle) => {
   const win = new WebviewWindow('updater', {
@@ -146,7 +152,7 @@ export const checkForAppUpdates = async (
   isAutoCheck = true,
   updateChannel: 'stable' | 'nightly' = 'stable',
 ): Promise<boolean> => {
-  if (UPDATES_DISABLED) return false;
+  if (updatesDisabled()) return false;
   const lastCheck = localStorage.getItem(LAST_CHECK_KEY);
   const now = Date.now();
   if (isAutoCheck && lastCheck && now - parseInt(lastCheck, 10) < CHECK_UPDATE_INTERVAL_SEC * 1000)
@@ -225,7 +231,7 @@ export const getLastShownReleaseNotesVersion = () => {
 };
 
 export const checkAppReleaseNotes = async (isAutoCheck = true) => {
-  if (UPDATES_DISABLED) return false;
+  if (updatesDisabled()) return false;
   const currentVersion = getAppVersion();
   const lastShownVersion = getLastShownReleaseNotesVersion();
   if ((lastShownVersion && semver.gt(currentVersion, lastShownVersion)) || !isAutoCheck) {

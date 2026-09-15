@@ -61,3 +61,20 @@ if (typeof HTMLMediaElement !== 'undefined') {
   HTMLMediaElement.prototype.pause = () => {};
   HTMLMediaElement.prototype.load = () => {};
 }
+
+// `@zip.js/zip.js`'s BlobWriter builds its Blob from `new Response(stream).blob()`.
+// In the jsdom lane `Response` is Node's (undici), so the Blob it yields belongs
+// to a *different realm* than jsdom's `File`. `new File([foreignBlob], name)`
+// then coerces the foreign Blob through `String()`, producing the 13-byte
+// "[object Blob]" instead of the archive bytes — every zip/EPUB a test builds
+// (novel import, Yomitan dictionaries, dictionary plugins) is then rejected by
+// the reader with "File format is not recognized". Rewrap foreign Blobs in the
+// realm-local Blob so the whole lane shares one Blob/File implementation.
+if (typeof Response !== 'undefined' && typeof Blob !== 'undefined') {
+  const nativeResponseBlob = Response.prototype.blob;
+  Response.prototype.blob = async function (this: Response): Promise<Blob> {
+    const blob = await nativeResponseBlob.call(this);
+    if (blob instanceof Blob) return blob;
+    return new Blob([await blob.arrayBuffer()], { type: blob.type });
+  };
+}

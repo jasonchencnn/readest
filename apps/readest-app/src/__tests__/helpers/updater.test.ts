@@ -76,6 +76,11 @@ import {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  // The Moyue build ships with the upstream update feeds disabled
+  // (`updatesDisabled()` defaults to true). These tests exercise the
+  // resolution logic itself, so they opt back in explicitly — shipped env
+  // never sets this, so production stays request-free.
+  vi.stubEnv('NEXT_PUBLIC_UPDATES_DISABLED', 'false');
   localStorage.clear();
   mockIsTauriAppPlatform = false;
   mockAppVersion = '1.0.0';
@@ -86,6 +91,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.unstubAllEnvs();
   vi.restoreAllMocks();
 });
 
